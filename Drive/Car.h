@@ -24,3 +24,4 @@ namespace pkr
 
 		float		getForceDrag();
 		float		getForceRollResist();
+		float		getForceTraction();

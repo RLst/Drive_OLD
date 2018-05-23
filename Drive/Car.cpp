@@ -12,6 +12,10 @@ float Car::getForceRollResist()
 	return (-m_cRR * m_vel);
 }
 
+float Car::getForceTraction()
+{
+	return getTorqueWheel * getWheelRadius;
+}
 
 Car::~Car()
 {
