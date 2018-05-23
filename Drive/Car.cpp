@@ -17,7 +17,18 @@ float Car::getForceTraction()
 	return getTorqueWheel * getWheelRadius;
 }
 
-Car::~Car()
+float Car::getGravity()
 {
+	return m_gravity;
 }
+
+float Car::getForceLongitude()
+{
+	return getForceTraction() + getForceDrag() + getForceRollResist() + getGravity();
+}
+
+Car::~Car()
+{}
+
+
 }
