@@ -36,6 +36,11 @@ Vector2 Car::getForceBraking()
 	return getHeading() * m_cBrake;
 }
 
+float Car::getWheelAngularVelocity()
+{
+	return 2 * PI * en;
+}
+
 float Car::getWheelTorque()
 {
 	return getEngineTorque() * getGearRatio(m_current_gear) * getFinalDriveRatio();
