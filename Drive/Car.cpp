@@ -1,34 +1,50 @@
 #include "Car.h"
 
-namespace pkr {
-
-float Car::getForceDrag()
+Vector2 Car::getForceDrag()
 {
-	return (-m_cDrag * m_vel * abs(m_vel));
+	//Drag force = - Drag constant * velocity * |velocity|
+	return (-m_cDrag * m_vel * m_vel.absolute());
 }
 
-float Car::getForceRollResist()
+Vector2 Car::getForceRollResist()
 {
+	//Rolling Resistance Force = RollResist constant * Velocity
 	return (-m_cRR * m_vel);
 }
 
-float Car::getForceTraction()
+Vector2 Car::getForceTraction()
 {
-	return getTorqueWheel * getWheelRadius;
+	//Returns the force vector 
+	//Traction force = Wheel torque / Wheel radius
+	return getHeading() * getWheelTorque() * getWheelRadius();
 }
 
-float Car::getGravity()
+Vector2 Car::getForceGravity()
 {
-	return m_gravity;
+	return (getHeading() * m_mass) * g_gravity * sinf(m_slopeAngle);
 }
 
-float Car::getForceLongitude()
+Vector2 Car::getForceLongitude()
 {
-	return getForceTraction() + getForceDrag() + getForceRollResist() + getGravity();
+	//Longitudinal force = Traction force + Drag force + RollResist force + Gravity force
+	return getForceDrag() + getForceRollResist() + getForceGravity()+ getForceTraction();
+}
+
+Vector2 Car::getForceBraking()
+{
+	//Inverse of Heading * Braking constant
+	return getHeading() * m_cBrake;
+}
+
+float Car::getWheelTorque()
+{
+	return getEngineTorque() * getGearRatio(m_current_gear) * getFinalDriveRatio();
+}
+
+Vector2 Car::getHeading()
+{
+	return m_vel.normalised();
 }
 
 Car::~Car()
 {}
-
-
-}
