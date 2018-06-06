@@ -28,8 +28,8 @@ private:
 	float		m_slopeAngle;
 
 	//Transformations
-	Matrix3		m_local;
-	Matrix3		m_world;
+	Matrix3		m_localTrans;
+	Matrix3		m_worldTrans;
 
 	//Constants
 	float		m_cDrag;
@@ -60,26 +60,27 @@ public:
 	Car();
 	~Car();
 
-	float		getWheelTorque();				//Gets the wheel torque of the car by other calcs
-	float		getWheelRadius();				//Get wheel radius by calculating wheel sizes etc
-	float		getEngineTorque();				//Retrieves engine torque from a torque curve?
-	float		getGearRatio(GEAR gear);
-	float		getFinalDriveRatio() { return m_gearRatio.final; }
+	float		WheelTorque();				//Gets the wheel torque of the car by other calcs
+	float		WheelRadius();				//Get wheel radius by calculating wheel sizes etc
+	float		EngineTorque();				//Retrieves engine torque from a torque curve?
+	float		GearRatio(GEAR gear);
+	float		FinalDriveRatio() { return m_gearRatio.final; }
+	float		EngineForce();
 
-	Vector2		getHeading();
+	Vector2		Heading();					//u; Vector
 
-	Vector2		getForceDrag();
-	Vector2		getForceRollResist();
-	Vector2		getForceTraction();
-	Vector2		getForceGravity();
-	Vector2		getForceLongitude();
-	Vector2		getForceBraking();
+	Vector2		ForceDrag();
+	Vector2		ForceRollResist();
+	Vector2		ForceTraction();				//Ftraction; Vector
+	Vector2		ForceGravity();
+	Vector2		ForceLongitude();
+	Vector2		ForceBraking();
 
 	Vector2		getAccel(float deltaTime);
 	Vector2		getVelNew(float deltaTime);
 	Vector2		getPosNew(float deltaTime);
 
-	float		getEngineVelocity();
-	float		getWheelAngularVelocity();
+	float		EngineVelocity();
+	float		WheelAngularVelocity();
 
 };

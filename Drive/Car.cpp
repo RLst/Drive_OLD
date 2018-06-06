@@ -1,54 +1,54 @@
 #include "Car.h"
 
-Vector2 Car::getForceDrag()
+Vector2 Car::ForceDrag()
 {
 	//Drag force = - Drag constant * velocity * |velocity|
 	return (-m_cDrag * m_vel * m_vel.absolute());
 }
 
-Vector2 Car::getForceRollResist()
+Vector2 Car::ForceRollResist()
 {
 	//Rolling Resistance Force = RollResist constant * Velocity
 	return (-m_cRR * m_vel);
 }
 
-Vector2 Car::getForceTraction()
+Vector2 Car::ForceTraction()
 {
 	//Returns the force vector 
 	//Traction force = Wheel torque / Wheel radius
-	return getHeading() * getWheelTorque() * getWheelRadius();
+	return Heading() * WheelTorque() * WheelRadius();
 }
 
-Vector2 Car::getForceGravity()
+Vector2 Car::ForceGravity()
 {
-	return (getHeading() * m_mass) * g_gravity * sinf(m_slopeAngle);
+	return (Heading() * m_mass) * g_gravity * sinf(m_slopeAngle);
 }
 
-Vector2 Car::getForceLongitude()
+Vector2 Car::ForceLongitude()
 {
 	//Longitudinal force = Traction force + Drag force + RollResist force + Gravity force
-	return getForceDrag() + getForceRollResist() + getForceGravity()+ getForceTraction();
+	return ForceDrag() + ForceRollResist() + ForceGravity()+ ForceTraction();
 }
 
-Vector2 Car::getForceBraking()
+Vector2 Car::ForceBraking()
 {
 	//Inverse of Heading * Braking constant
-	return getHeading() * m_cBrake;
+	return Heading() * m_cBrake;
 }
 
-float Car::getWheelAngularVelocity()
+float Car::WheelAngularVelocity()
 {
 	return 2 * PI * en;
 }
 
-float Car::getWheelTorque()
+float Car::WheelTorque()
 {
-	return getEngineTorque() * getGearRatio(m_current_gear) * getFinalDriveRatio();
+	return EngineTorque() * GearRatio(m_current_gear) * FinalDriveRatio();
 }
 
-Vector2 Car::getHeading()
+Vector2 Car::Heading()
 {
-	return m_vel.normalised();
+	return m_worldTrans.yAxis;		//Should already be normalised
 }
 
 Car::~Car()
