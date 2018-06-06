@@ -3,6 +3,8 @@
 #include <Vector2.h>
 #include <Matrix3.h>
 
+const float PI = 3.1415926535897932384626433832795;
+
 class Vector2;
 
 class Car
@@ -39,6 +41,7 @@ private:
 
 	//Specifications
 	float		m_mass;
+	float		m_wheelRadius;
 
 	//Engine
 
