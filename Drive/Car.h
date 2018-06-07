@@ -3,13 +3,19 @@
 #include <Vector2.h>
 #include <Matrix3.h>
 
-const float PI = 3.1415926535897932384626433832795;
+const float PI = 3.1415926535897932384626433832795f;
 
 class Vector2;
 
 class Car
 {
 private:
+	//Physics
+	float		m_cDrag = 0.4257;		//Corvette
+	float		m_cRR = 12.8;			//Corvette; unconfirmed
+	float		g_gravity = 9.81f;
+	float		m_cBrake;
+
 	enum GEAR
 	{
 		REVERSE = -1,
@@ -24,7 +30,7 @@ private:
 
 	//Core
 	Vector2		m_pos;
-	Vector2		m_vel;
+	Vector2		m_vel;							//v; vector
 	float		m_rot;
 
 	float		m_slopeAngle;
@@ -34,10 +40,7 @@ private:
 	Matrix3		m_worldTrans;
 
 	//Constants
-	float		m_cDrag;
-	float		m_cRR;
-	float		g_gravity = 9.81f;
-	float		m_cBrake;
+
 
 	//Specifications
 	float		m_mass;
@@ -70,19 +73,23 @@ public:
 	float		FinalDriveRatio() { return m_gearRatio.final; }
 	float		EngineForce();
 
-	Vector2		Heading();					//u; Vector
+	//Heading
+	Vector2		Heading();						//Normalised vector of the direction the car is facing
 
-	Vector2		ForceDrag();
-	Vector2		ForceRollResist();
-	Vector2		ForceTraction();				//Ftraction; Vector
+	//Forces
+	Vector2		ForceTraction();				//Ftraction; vector
+	Vector2		ForceDrag();					//Fdrag; vector
+	Vector2		ForceRollResist();				//Frollresist; vector
+	Vector2		ForceLongitude();				//Flong; vector
 	Vector2		ForceGravity();
-	Vector2		ForceLongitude();
 	Vector2		ForceBraking();
 
-	Vector2		getAccel(float deltaTime);
-	Vector2		getVelNew(float deltaTime);
-	Vector2		getPosNew(float deltaTime);
+	//Integration
+	Vector2		Accel();
+	Vector2		Velocity(float deltaTime);
+	Vector2		Position(float deltaTime);
 
+	//Car specs
 	float		EngineVelocity();
 	float		WheelAngularVelocity();
 
