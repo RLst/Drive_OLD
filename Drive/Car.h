@@ -78,6 +78,7 @@ private:
 		FOURTH,
 		FIFTH,
 		SIXTH,
+		FINAL
 	};
 	struct {
 		float	reverse;
