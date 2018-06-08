@@ -29,11 +29,37 @@ private:
 	float		m_coeffDrag;
 	float		m_factorRR;						//Factor to multiply with Drag constant to get Roll Resist constant
 
-	//Specifications
+	////Specifications
 	float		m_mass;
 	float		m_wheelRadius;
 	float		m_areaFront;
 	float		m_mu;							//Tire friction coefficient
+	//Tyres
+	float		m_tyreWidth;					//Millimetres
+	float		m_tyreAspectRatio;				//Percentage
+	float		m_tyreDiameter;					//Inches
+
+	//enum TYRE_SPEED {
+	//	J = 100,
+	//	K = 110,
+	//	L = 120,
+	//	M = 130,
+	//	N = 140,
+	//	P = 150,
+	//	Q = 160,
+	//	R = 170,
+	//	S = 180,
+	//	T = 190,
+	//	U = 200,
+	//	H = 210,
+	//	V = 240,
+	//	W = 270,
+	//	Y = 300,
+	//	VR,
+	//	ZR
+	//};
+	////TYRE_SPEED			m_tyreSpeedRating;
+	////TYRE		m_tyreConstruction;
 
 	//Engine
 	float		m_arbEngineForce;
