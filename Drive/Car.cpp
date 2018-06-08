@@ -75,8 +75,15 @@ float Car::EngineForce()
 {
 	return m_arbEngineForce;
 }
+
+float Car::cDrag()
 {
-	return EngineTorque() * GearRatio(m_current_gear) * FinalDriveRatio();
+	return 0.5 * m_coeffDrag * m_areaFront * RHO * m_vel.dot(m_vel);
+}
+
+float Car::cRR()
+{
+	return cDrag() * m_factorRR;
 }
 
 Vector2 Car::Heading()

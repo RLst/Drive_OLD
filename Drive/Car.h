@@ -26,6 +26,9 @@ private:
 		FIFTH,
 		SIXTH,
 	};
+	//Physics
+	//float		m_coeffDrag = 0.4257;		//Corvette
+	//float		m_cRR = 12.8;			//Corvette; unconfirmed
 
 	//Core
 	Vector3		m_pos;
@@ -39,7 +42,8 @@ private:
 	Matrix3		m_worldTrans;
 
 	//Constants
-
+	float		m_coeffDrag;
+	float		m_factorRR;						//Factor to multiply with Drag constant to get Roll Resist constant
 
 	//Specifications
 	float		m_mass;
@@ -75,6 +79,10 @@ public:
 
 	//Heading
 	Vector3		Heading();						//Normalised vector of the direction the car is facing
+
+	//Constants; Maybe these are too basic to be in its own function
+	float		cDrag();						
+	float		cRR();
 
 	//Forces
 	Vector3		ForceTraction();				//Ftraction; vector
