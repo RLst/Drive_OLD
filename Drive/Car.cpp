@@ -17,7 +17,7 @@ Vector3 Car::ForceDrag()
 Vector3 Car::ForceRollResist()
 {
 	//Rolling Resistance Force = RollResist constant * Velocity
-	return (-m_cRR * m_vel);
+	return -cRR() * m_vel;
 }
 
 Vector3 Car::ForceLongitude()
