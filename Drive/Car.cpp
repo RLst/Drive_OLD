@@ -95,11 +95,6 @@ Vector3 Car::calcPos(float deltaTime)
 //	return EngineTorque() * GearRatio(m_current_gear) * FinalDriveRatio();
 //}
 
-float Car::EngineForce()
-{
-	return m_arbEngineForce;
-}
-
 Vector3 Car::Heading()
 {
 	return m_worldTrans.yAxis.normalised();		//Should already be normalised
