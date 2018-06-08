@@ -71,6 +71,10 @@ Vector3 Car::calcPos(float deltaTime)
 //}
 
 float Car::WheelTorque()
+float Car::EngineForce()
+{
+	return m_arbEngineForce;
+}
 {
 	return EngineTorque() * GearRatio(m_current_gear) * FinalDriveRatio();
 }

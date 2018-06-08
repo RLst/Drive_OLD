@@ -46,6 +46,7 @@ private:
 	float		m_wheelRadius;
 
 	//Engine
+	float		m_arbEngineForce;
 
 	//Gears
 	GEAR m_current_gear;
