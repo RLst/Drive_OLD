@@ -27,6 +27,18 @@ Vector3 Car::ForceLongitudinal()
 }
 
 //Vector3 Car::ForceGravity()
+Vector3 Car::ForceBraking()
+{
+	Vector3 brakeForce;
+	//Brakes only work if the car is moving...
+	if (m_vel.magnitude() > 0) {
+		return -Heading() * getBrakeFactor();
+	}
+	else {	//...otherwise return a null vector
+		return Vector3();
+	}
+}
+
 {
 	return (Heading() * m_mass) * g_gravity * sinf(m_slopeAngle);
 }

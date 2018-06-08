@@ -82,10 +82,8 @@ public:
 	Vector3		ForceLongitudinal();				//Flong; vector
 	//Vector3		ForceGravity();
 
-	//Integration
-	Vector2		Accel();
-	Vector2		Velocity(float deltaTime);
-	Vector2		Position(float deltaTime);
+	//Braking
+	Vector3		ForceBraking();
 
 	//Car specs
 	float		EngineVelocity();
