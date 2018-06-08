@@ -68,6 +68,9 @@ private:
 	//Wheels
 	float m_wheelBase;
 	float m_wheelTrack;
+	float m_heightCM;						//Height of centre of mass
+	float m_distFAxle;						//Distance from CG to front axle
+	float m_distRAxle;						//Distance from CG to rear axle
 	enum WHEEL
 	{
 		FL = 0,
@@ -108,6 +111,7 @@ public:
 	float		getBrakeFactor();				//Returns the current brake factor (brake amount, calculated from brake input between 0-1.0f?) 
 
 	//Weight transfer
+	float		Weight();
 	Vector3		ForceWheelTractionMax(WHEEL wheel, float Weight);
 	float		WeightOnFrontAxle();
 	float		WeightOnRearAxle();

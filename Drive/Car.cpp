@@ -49,10 +49,25 @@ float Car::getBrakeFactor()
 	return m_cBraking;
 }
 
+float Car::Weight()
+{
+	return m_mass * GRAVITY;
+}
+
 Vector3 Car::ForceWheelTractionMax(WHEEL wheel, float Weight)
 {
 
 	return Vector3();
+}
+
+float Car::WeightOnFrontAxle()
+{
+	return ((m_distRAxle / m_wheelBase) * Weight()) - ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());		//Not sure about the last part
+}
+
+float Car::WeightOnRearAxle()
+{
+	return ((m_distFAxle / m_wheelBase) * Weight()) + ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());
 }
 
 Vector3 Car::calcAccel()
