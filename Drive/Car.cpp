@@ -1,6 +1,6 @@
 #include "Car.h"
 
-Vector2 Car::ForceTraction()
+Vector3 Car::ForceTraction()
 {
 	//Returns the force vector 
 	//Traction force = Wheel torque / Wheel radius
@@ -8,46 +8,46 @@ Vector2 Car::ForceTraction()
 	//return Heading() * WheelTorque() * WheelRadius();
 }
 
-Vector2 Car::ForceDrag()
+Vector3 Car::ForceDrag()
 {
 	//Drag force = - Drag constant * velocity * |velocity|
 	return (-m_cDrag * m_vel * m_vel.getAbsolute());
 }
 
-Vector2 Car::ForceRollResist()
+Vector3 Car::ForceRollResist()
 {
 	//Rolling Resistance Force = RollResist constant * Velocity
 	return (-m_cRR * m_vel);
 }
 
-Vector2 Car::ForceLongitude()
+Vector3 Car::ForceLongitude()
 {
 	//Longitudinal force = Traction force + Drag force + RollResist force + Gravity force
 	return ForceDrag() + ForceRollResist() + ForceGravity()+ ForceTraction();
 }
 
-Vector2 Car::ForceGravity()
+//Vector3 Car::ForceGravity()
 {
 	return (Heading() * m_mass) * g_gravity * sinf(m_slopeAngle);
 }
 
-Vector2 Car::ForceBraking()
+Vector3 Car::ForceWheelTractionMax(WHEEL wheel, float Weight)
 {
 	//Inverse of Heading * Braking constant
 	return Heading() * m_cBrake;
 }
 
-Vector2 Car::Accel()
+Vector3 Car::calcAccel()
 {
 	return ForceLongitude() / m_mass;
 }
 
-Vector2 Car::Velocity(float deltaTime)
+Vector3 Car::calcVel(float deltaTime)
 {
 	return m_vel + deltaTime * Accel();
 }
 
-Vector2 Car::Position(float deltaTime)
+Vector3 Car::calcPos(float deltaTime)
 {
 	return m_pos + deltaTime * Velocity(deltaTime);
 }

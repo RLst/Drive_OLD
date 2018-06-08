@@ -1,11 +1,10 @@
 #pragma once
 #include <cmath>
-#include <Vector2.h>
+#include <Vector3.h>
 #include <Matrix3.h>
 
 const float PI = 3.1415926535897932384626433832795f;
 
-class Vector2;
 
 class Car
 {
@@ -29,9 +28,9 @@ private:
 	};
 
 	//Core
-	Vector2		m_pos;
-	Vector2		m_vel;							//v; vector
-	float		m_rot;
+	Vector3		m_pos;
+	Vector3		m_vel;							//v; vector
+	float		m_zRotation;
 
 	float		m_slopeAngle;
 
@@ -74,15 +73,14 @@ public:
 	float		EngineForce();
 
 	//Heading
-	Vector2		Heading();						//Normalised vector of the direction the car is facing
+	Vector3		Heading();						//Normalised vector of the direction the car is facing
 
 	//Forces
-	Vector2		ForceTraction();				//Ftraction; vector
-	Vector2		ForceDrag();					//Fdrag; vector
-	Vector2		ForceRollResist();				//Frollresist; vector
-	Vector2		ForceLongitude();				//Flong; vector
-	Vector2		ForceGravity();
-	Vector2		ForceBraking();
+	Vector3		ForceTraction();				//Ftraction; vector
+	Vector3		ForceDrag();					//Fdrag; vector
+	Vector3		ForceRollResist();				//Frollresist; vector
+	Vector3		ForceLongitude();				//Flong; vector
+	//Vector3		ForceGravity();
 
 	//Integration
 	Vector2		Accel();
