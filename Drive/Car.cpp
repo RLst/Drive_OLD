@@ -114,9 +114,17 @@ Car::Car()
 {
 	m_pos = Vector3();
 	m_vel = Vector3();
+	m_accel = Vector3();
+
+	//Constants/coefficients
 	m_coeffDrag = 0.3f;		//For a Corvette
 	m_factorRR = 30.0f;		//For the average car driving on tarmac
 	m_cBraking = 100.0f;
+
+	//Set Engine
+
+	//Set Transmission
+
 }
 
 Car::~Car()
