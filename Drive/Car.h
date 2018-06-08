@@ -85,13 +85,8 @@ public:
 	~Car();
 
 	//Car specs
-	float		EngineVelocity();
-	//float		WheelAngularVelocity();
-
-	//float		EngineTorque();				//Retrieves engine torque from a torque curve?
 	float		GearRatio(GEAR gear);
-	inline float		FinalDriveRatio() { return m_gearRatio.final; }
-	float		EngineForce();
+	float		FinalDriveRatio() { return m_gearRatio.final; }
 
 	//Heading
 	Vector3		Heading();						//Normalised vector of the direction the car is facing
