@@ -39,8 +39,9 @@ Vector3 Car::ForceBraking()
 	}
 }
 
+float Car::getBrakeFactor()
 {
-	return (Heading() * m_mass) * g_gravity * sinf(m_slopeAngle);
+	return m_cBraking;
 }
 
 Vector3 Car::ForceWheelTractionMax(WHEEL wheel, float Weight)

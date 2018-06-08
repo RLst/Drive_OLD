@@ -84,6 +84,7 @@ public:
 
 	//Braking
 	Vector3		ForceBraking();
+	float		getBrakeFactor();				//Returns the current brake factor (brake amount, calculated from brake input between 0-1.0f?) 
 
 	//Car specs
 	float		EngineVelocity();
