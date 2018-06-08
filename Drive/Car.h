@@ -77,6 +77,14 @@ private:
 		float	final;
 	} m_gearRatio;
 
+	enum WHEEL
+	{
+		FL = 0,
+		FR = 1,
+		RL = 2,
+		RR = 3
+	};
+
 public:
 	Car();
 	~Car();
