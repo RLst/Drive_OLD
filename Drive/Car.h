@@ -14,8 +14,9 @@ private:
 	//float		m_cRR = 12.8;			//Corvette; unconfirmed
 
 	//Core
-	Vector3		m_pos;
+	Vector3		m_accel;
 	Vector3		m_vel;							//v; vector
+	Vector3		m_pos;
 	float		m_zRotation;
 
 	float		m_slopeAngle;
