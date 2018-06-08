@@ -95,11 +95,12 @@ private:
 	float m_transEfficiency;
 
 	//Wheels
-	float m_wheelBase;
-	float m_wheelTrack;
-	float m_heightCM;						//Height of centre of mass
-	float m_distFAxle;						//Distance from CG to front axle
-	float m_distRAxle;						//Distance from CG to rear axle
+	float		m_wheelRadius;					//Calculate from tyre specs
+	float		m_wheelBase;					//Distance between axles
+	float		m_wheelTrack;					//Distance between the centreline of wheels of the same axle
+	float		m_heightCM;						//Height of centre of mass
+	float		m_distFAxle;					//Distance from CG to front axle
+	float		m_distRAxle;					//Distance from CG to rear axle
 	enum WHEEL
 	{
 		FL = 0,
