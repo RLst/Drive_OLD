@@ -53,7 +53,6 @@ private:
 		FIFTH,
 		SIXTH,
 	};
-	GEAR m_current_gear;
 	struct {
 		float	reverse;
 		float	neutral;
@@ -65,6 +64,8 @@ private:
 		float	sixth;
 		float	final;
 	} m_gearRatio;
+	GEAR m_current_gear;
+	float m_transEfficiency;
 
 	//Wheels
 	float m_wheelBase;
@@ -95,29 +96,29 @@ public:
 	float		cDrag();						
 	float		cRR();
 
-	//Forces
-	Vector3		ForceTraction();				//Ftraction; vector
-	Vector3		ForceDrag();					//Fdrag; vector
-	Vector3		ForceRollResist();				//Frollresist; vector
-	Vector3		ForceLongitudinal();				//Flong; vector
-	//Vector3		ForceGravity();
+	////Forces
+	Vector3		ForceLongitudinal();			//Returns sum longitudinal force on car
+
+	//Drive
+	Vector3		ForceTraction();				//Returns car's driving force
+
+	//Resistance
+	Vector3		ForceDrag();					//Return force of air resistance
+	Vector3		ForceRollResist();				//Returns force of rolling resistance
 
 	//Braking
-	Vector3		ForceBraking();
+	Vector3		ForceBraking();					//Returns car's braking force
 	float		getBrakeFactor();				//Returns the current brake factor (brake amount, calculated from brake input between 0-1.0f?) 
 
 	//Weight transfer
 	float		Weight();
-	Vector3		ForceWheelTractionMax(WHEEL wheel, float Weight);
 	float		WeightOnFrontAxle();
 	float		WeightOnRearAxle();
+	Vector3		testForceWheelTractionMax(WHEEL wheel, float Weight);
 
 	//Wheel
-	float		WheelTorque();				//Gets the wheel torque of the car by other calcs
-	float		WheelRadius();				//Get wheel radius by calculating wheel sizes etc
-
-
-
+	float		testWheelTorque();				//Gets the wheel torque of the car by other calcs
+	float		testWheelRadius();				//Get wheel radius by calculating wheel sizes etc
 
 	//Integration
 	Vector3		calcAccel();
