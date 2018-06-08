@@ -165,10 +165,13 @@
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="DriveApp.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SceneObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Car.h" />
     <ClInclude Include="DriveApp.h" />
+    <ClInclude Include="GameDefines.h" />
+    <ClInclude Include="SceneObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

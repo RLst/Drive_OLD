@@ -1,4 +1,5 @@
 #include "Car.h"
+#include "GameDefines.h"
 
 Vector3 Car::ForceTraction()
 {
@@ -27,6 +28,10 @@ Vector3 Car::ForceLongitudinal()
 }
 
 //Vector3 Car::ForceGravity()
+//{
+//	return (Heading() * m_mass) * g_gravity * sinf(m_slopeAngle);
+//}
+
 Vector3 Car::ForceBraking()
 {
 	Vector3 brakeForce;
@@ -46,8 +51,8 @@ float Car::getBrakeFactor()
 
 Vector3 Car::ForceWheelTractionMax(WHEEL wheel, float Weight)
 {
-	//Inverse of Heading * Braking constant
-	return Heading() * m_cBrake;
+
+	return Vector3();
 }
 
 Vector3 Car::calcAccel()
@@ -70,10 +75,19 @@ Vector3 Car::calcPos(float deltaTime)
 //	return 2 * PI * en;
 //}
 
-float Car::WheelTorque()
+//float Car::WheelTorque()
+//{
+//	return EngineTorque() * GearRatio(m_current_gear) * FinalDriveRatio();
+//}
+
 float Car::EngineForce()
 {
 	return m_arbEngineForce;
+}
+
+Vector3 Car::Heading()
+{
+	return m_worldTrans.yAxis.normalised();		//Should already be normalised
 }
 
 float Car::cDrag()
@@ -86,9 +100,13 @@ float Car::cRR()
 	return cDrag() * m_factorRR;
 }
 
-Vector2 Car::Heading()
+Car::Car()
 {
-	return m_worldTrans.yAxis;		//Should already be normalised
+	m_pos = Vector3();
+	m_vel = Vector3();
+	m_coeffDrag = 0.3f;		//For a Corvette
+	m_factorRR = 30.0f;		//For the average car driving on tarmac
+	m_cBraking = 100.0f;
 }
 
 Car::~Car()

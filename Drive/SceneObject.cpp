@@ -7,7 +7,7 @@ SceneObject::SceneObject()
 
 SceneObject::~SceneObject()
 {
-	//Detach from parent
-	if (m_parent != nullptr)
+	//If the parent is not the root object then remove this child
+	if (m_parent != nullptr)	
 		m_parent->removeChild(this);
 }
