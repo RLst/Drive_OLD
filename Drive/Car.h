@@ -53,17 +53,28 @@ private:
 	float		m_arbEngineForce;
 
 	//Gears
+	enum GEAR
+	{
+		REVERSE = -1,
+		NEUTRAL = 0,
+		FIRST,
+		SECOND,
+		THIRD,
+		FOURTH,
+		FIFTH,
+		SIXTH,
+	};
 	GEAR m_current_gear;
 	struct {
-		float reverse;
-		float neutral;
-		float first;
-		float second;
-		float third;
-		float fourth;
-		float fifth;
-		float sixth;
-		float final;
+		float	reverse;
+		float	neutral;
+		float	first;
+		float	second;
+		float	third;
+		float	fourth;
+		float	fifth;
+		float	sixth;
+		float	final;
 	} m_gearRatio;
 
 public:
