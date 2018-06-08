@@ -90,5 +90,9 @@ public:
 	//Car specs
 	float		EngineVelocity();
 	float		WheelAngularVelocity();
+	//Integration
+	Vector3		calcAccel();
+	Vector3		calcVel(float deltaTime);
+	Vector3		calcPos(float deltaTime);
 
 };

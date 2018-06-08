@@ -52,17 +52,17 @@ Vector3 Car::ForceWheelTractionMax(WHEEL wheel, float Weight)
 
 Vector3 Car::calcAccel()
 {
-	return ForceLongitude() / m_mass;
+	return ForceLongitudinal() / m_mass;
 }
 
 Vector3 Car::calcVel(float deltaTime)
 {
-	return m_vel + deltaTime * Accel();
+	return m_vel + calcAccel() * deltaTime;
 }
 
 Vector3 Car::calcPos(float deltaTime)
 {
-	return m_pos + deltaTime * Velocity(deltaTime);
+	return m_pos + calcVel(deltaTime) * deltaTime;
 }
 
 //float Car::WheelAngularVelocity()
