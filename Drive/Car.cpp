@@ -20,10 +20,10 @@ Vector3 Car::ForceRollResist()
 	return -cRR() * m_vel;
 }
 
-Vector3 Car::ForceLongitude()
+Vector3 Car::ForceLongitudinal()
 {
 	//Longitudinal force = Traction force + Drag force + RollResist force + Gravity force
-	return ForceDrag() + ForceRollResist() + ForceGravity()+ ForceTraction();
+	return ForceTraction() + ForceBraking() + ForceDrag() + ForceRollResist();
 }
 
 //Vector3 Car::ForceGravity()

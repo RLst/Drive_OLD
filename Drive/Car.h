@@ -79,7 +79,7 @@ public:
 	Vector3		ForceTraction();				//Ftraction; vector
 	Vector3		ForceDrag();					//Fdrag; vector
 	Vector3		ForceRollResist();				//Frollresist; vector
-	Vector3		ForceLongitude();				//Flong; vector
+	Vector3		ForceLongitudinal();				//Flong; vector
 	//Vector3		ForceGravity();
 
 	//Integration
