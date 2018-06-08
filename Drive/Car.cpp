@@ -11,7 +11,7 @@ Vector3 Car::ForceTraction()
 Vector3 Car::ForceDrag()
 {
 	//Drag force = - Drag constant * velocity * |velocity|
-	return (-m_cDrag * m_vel * m_vel.getAbsolute());
+	return -m_coeffDrag * m_vel * m_vel.magnitude();
 }
 
 Vector3 Car::ForceRollResist()
