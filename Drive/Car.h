@@ -145,8 +145,18 @@ public:
 	Vector3		testForceWheelTractionMax(WHEEL wheel, float Weight);
 
 	//Wheel
+	float		WheelRadius();					//Get wheel radius by calculating wheel sizes etc
 	float		testWheelTorque();				//Gets the wheel torque of the car by other calcs
-	float		testWheelRadius();				//Get wheel radius by calculating wheel sizes etc
+
+	//Engine force
+	float		RPM();
+	float		Throttle();
+	float		getEngineTorqueCurve();
+	Vector3		testForceDrive();
+
+	//Transmission
+	GEAR		getCurrentGear();
+	float		GearRatio();
 
 	//Integration
 	Vector3		calcAccel();

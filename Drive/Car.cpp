@@ -54,10 +54,15 @@ float Car::Weight()
 	return m_mass * GRAVITY;
 }
 
-Vector3 Car::ForceWheelTractionMax(WHEEL wheel, float Weight)
+Vector3 Car::testForceWheelTractionMax(WHEEL wheel, float Weight)
 {
 
 	return Vector3();
+}
+
+float Car::WheelRadius()
+{
+	return m_wheelRadius;
 }
 
 float Car::WeightOnFrontAxle()
@@ -68,6 +73,29 @@ float Car::WeightOnFrontAxle()
 float Car::WeightOnRearAxle()
 {
 	return ((m_distFAxle / m_wheelBase) * Weight()) + ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());
+}
+
+float Car::RPM()
+{ 
+	return 4500;
+}
+
+float Car::Throttle()
+{
+	return 0.5f;
+}
+
+float Car::getEngineTorqueCurve()
+{
+	//Need: RPM, Throttle amount 0-1.0f
+	float rpm = RPM();
+	float throttle = Throttle();
+	return 200;			///TEMP.. in Newton Metres; To be completed
+}
+
+Vector3 Car::testForceDrive()
+{
+	return Heading() * getEngineTorqueCurve() * GearRatio(getCurrentGear()) * GearRatio(FINAL) * m_transEfficiency / WheelRadius();
 }
 
 Vector3 Car::calcAccel()
@@ -84,16 +112,6 @@ Vector3 Car::calcPos(float deltaTime)
 {
 	return m_pos + calcVel(deltaTime) * deltaTime;
 }
-
-//float Car::WheelAngularVelocity()
-//{
-//	return 2 * PI * en;
-//}
-
-//float Car::WheelTorque()
-//{
-//	return EngineTorque() * GearRatio(m_current_gear) * FinalDriveRatio();
-//}
 
 Vector3 Car::Heading()
 {
