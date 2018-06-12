@@ -4,6 +4,28 @@
 #include <Matrix3.h>
 #include "SceneObject.h"
 
+
+enum GEAR
+{
+	REVERSE = -1,
+	NEUTRAL = 0,
+	FIRST,
+	SECOND,
+	THIRD,
+	FOURTH,
+	FIFTH,
+	SIXTH,
+	FINAL = 99
+};
+enum WHEEL
+{
+	FL = 0,
+	FR = 1,
+	RL = 2,
+	RR = 3
+};
+
+
 class Car : public SceneObject
 {
 private:
@@ -68,18 +90,6 @@ private:
 	float		m_cBraking;
 
 	//Gears
-	enum GEAR
-	{
-		REVERSE = -1,
-		NEUTRAL = 0,
-		FIRST,
-		SECOND,
-		THIRD,
-		FOURTH,
-		FIFTH,
-		SIXTH,
-		FINAL
-	};
 	struct {
 		float	reverse;
 		float	neutral;
@@ -101,13 +111,7 @@ private:
 	float		m_heightCM;						//Height of centre of mass
 	float		m_distFAxle;					//Distance from CG to front axle
 	float		m_distRAxle;					//Distance from CG to rear axle
-	enum WHEEL
-	{
-		FL = 0,
-		FR = 1,
-		RL = 2,
-		RR = 3
-	};
+
 
 public:
 	Car();
