@@ -4,7 +4,9 @@
 #include <Matrix3.h>
 #include "SceneObject.h"
 
-
+namespace aie {
+	class Texture;
+}
 enum GEAR
 {
 	REVERSE = -1,
@@ -24,6 +26,25 @@ enum WHEEL
 	RL = 2,
 	RR = 3
 };
+//enum TYRE_SPEED {
+//	J = 100,
+//	K = 110,
+//	L = 120,
+//	M = 130,
+//	N = 140,
+//	P = 150,
+//	Q = 160,
+//	R = 170,
+//	S = 180,
+//	T = 190,
+//	U = 200,
+//	H = 210,
+//	V = 240,
+//	W = 270,
+//	Y = 300,
+//	VR,
+//	ZR
+//};
 
 
 class Car : public SceneObject
@@ -32,8 +53,11 @@ private:
 	//ALL UNITS IN SI unless otherwise specified
 
 	//Physics
-	//float		m_coeffDrag = 0.4257;		//Corvette
-	//float		m_cRR = 12.8;			//Corvette; unconfirmed
+	//float		m_coeffDrag = 0.4257;			//Corvette
+	//float		m_cRR = 12.8;					//Corvette; unconfirmed
+
+	//Temp
+	float m_steerSpeed;
 
 	//Core
 	Vector3		m_accel;
@@ -41,50 +65,20 @@ private:
 	Vector3		m_pos;
 	float		m_zRotation;
 
-	float		m_slopeAngle;
-
-	//Transformations
-	Matrix3		m_localTrans;
-	Matrix3		m_worldTrans;
-
 	//Constants
 	float		m_coeffDrag;
 	float		m_factorRR;						//Factor to multiply with Drag constant to get Roll Resist constant
 
 	////Specifications
 	float		m_mass;
-	float		m_wheelRadius;
 	float		m_areaFront;
-	float		m_mu;							//Tire friction coefficient
-	//Tyres
-	float		m_tyreWidth;					//Millimetres
-	float		m_tyreAspectRatio;				//Percentage
-	float		m_tyreDiameter;					//Inches
 
-	//enum TYRE_SPEED {
-	//	J = 100,
-	//	K = 110,
-	//	L = 120,
-	//	M = 130,
-	//	N = 140,
-	//	P = 150,
-	//	Q = 160,
-	//	R = 170,
-	//	S = 180,
-	//	T = 190,
-	//	U = 200,
-	//	H = 210,
-	//	V = 240,
-	//	W = 270,
-	//	Y = 300,
-	//	VR,
-	//	ZR
-	//};
 	////TYRE_SPEED			m_tyreSpeedRating;
-	////TYRE		m_tyreConstruction;
+	////TYRE				m_tyreConstruction;
 
 	//Engine
 	float		m_arbEngineForce;
+	float		m_rpm;
 
 	//Braking
 	float		m_cBraking;
@@ -104,22 +98,25 @@ private:
 	GEAR m_current_gear;
 	float m_transEfficiency;
 
-	//Wheels
-	float		m_wheelRadius;					//Calculate from tyre specs
+	//Tyres and wheels
+	float		m_wheelRadius;
+	float		m_mu;							//Tire friction coefficient
+	float		m_tyreWidth;					//Millimetres
+	float		m_tyreAspectRatio;				//Percentage
+	float		m_tyreDiameter;					//Inches
 	float		m_wheelBase;					//Distance between axles
 	float		m_wheelTrack;					//Distance between the centreline of wheels of the same axle
 	float		m_heightCM;						//Height of centre of mass
 	float		m_distFAxle;					//Distance from CG to front axle
 	float		m_distRAxle;					//Distance from CG to rear axle
 
+	//Texture
+	aie::Texture*	m_texture;
+
 
 public:
 	Car();
 	~Car();
-
-	//Car specs
-	float		GearRatio(GEAR gear);
-	float		FinalDriveRatio() { return m_gearRatio.final; }
 
 	//Heading
 	Vector3		Heading();						//Normalised vector of the direction the car is facing
@@ -143,28 +140,40 @@ public:
 	float		getBrakeFactor();				//Returns the current brake factor (brake amount, calculated from brake input between 0-1.0f?) 
 
 	//Weight transfer
-	float		Weight();
+	float		Weight();						//Total weight of the car
 	float		WeightOnFrontAxle();
 	float		WeightOnRearAxle();
-	Vector3		testForceWheelTractionMax(WHEEL wheel, float Weight);
+	Vector3		testForceWheelTractionMax(WHEEL wheel, float Weight);		//Maximum force the wheel can exert
 
 	//Wheel
 	float		WheelRadius();					//Get wheel radius by calculating wheel sizes etc
-	float		testWheelTorque();				//Gets the wheel torque of the car by other calcs
+	float		simpleWheelTorque();			//Gets the wheel torque of the car by other calcs
+	
+	float		simpleWheelAngularVel();
+	float		WheelAngularVel();
 
-	//Engine force
-	float		RPM();
-	float		Throttle();
-	float		getEngineTorqueCurve();
-	Vector3		testForceDrive();
+	//Engine
+	float		oldRPM();						//TEMP; needs to be called before calcRPM()
+	float		simpleCalcRPM();				//RPM calculated from car velocity regardless of tire spin/slip
+	float		calcRPM();						//RPM calculated back from the wheel
 
-	//Transmission
-	GEAR		getCurrentGear();
-	float		GearRatio();
+	float		Throttle();						//Current actual throttle
 
-	//Integration
+	float		simpleEngineTorque();			//Temporary function that returns some kinda engine torque for testing purposes
+	float		EngineTorque(float rpm);					//Lookup actual engine torque from curve or table
+	Vector3		ForceWheel();					//aka. ForceWheel; Driving force exerted by drive wheels; ultimately the EngineForce()?
+
+	//*Transmission
+	GEAR		CurrentGear();					//Returns currently selected gear
+	float		GearRatio(GEAR gear);			//Returns the actual gear ratio of input gear
+
+	//*Integration
 	Vector3		calcAccel();
 	Vector3		calcVel(float deltaTime);
 	Vector3		calcPos(float deltaTime);
 
+
+	//UPDATE
+	void		onUpdate(float deltaTime);
+	void		onDraw(aie::Renderer2D* renderer);
 };

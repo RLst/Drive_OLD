@@ -19,6 +19,11 @@ bool DriveApp::startup() {
 	// the following path would be used instead: "./font/consolas.ttf"
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
 
+	////////////////////////////
+	s13 = new Car();
+	s13->setPosition(getWindowWidth() / 2.0f, getWindowHeight() / 2.0f);
+	///////////////////////////
+
 	return true;
 }
 
@@ -33,6 +38,10 @@ void DriveApp::update(float deltaTime) {
 	// input example
 	aie::Input* input = aie::Input::getInstance();
 
+	///////////////////////////
+	s13->update(deltaTime);
+	/////////////////////////
+
 	// exit the application
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
@@ -46,8 +55,10 @@ void DriveApp::draw() {
 	// begin drawing sprites
 	m_2dRenderer->begin();
 
+	///////////////////////////////
 	// draw your stuff here!
-	s13->draw();
+	s13->draw(m_2dRenderer);
+	/////////////////////////////////
 	
 	// output some text, uses the last used colour
 	m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
