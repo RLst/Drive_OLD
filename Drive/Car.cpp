@@ -25,7 +25,7 @@ Car::Car(const char * textureFilePath)
 	m_throttle = 0;
 
 	//Braking
-	m_cBraking = 100.0f;
+	m_cBraking = 10000.0f;
 	m_brake = 0;
 
 	//Transmission
@@ -178,12 +178,21 @@ void Car::offThrottle()
 		m_throttle = 0;
 }
 
-float Car::Throttle() const
+void Car::onBrake()
 {
-	return m_throttle;
+	m_brake += 0.1f;
+	//Clamp
+	if (m_brake > 1.0f)
+		m_brake = 1.0f;
 }
 
-
+void Car::offBrake()
+{
+	m_brake -= 0.5f;
+	//Clamp
+	if (m_brake < 0)
+		m_brake = 0;
+}
 
 GEAR Car::CurrentGear()
 {
@@ -277,13 +286,14 @@ void Car::onUpdate(float deltaTime)
 	}
 	else
 		offThrottle();
-
-	if (input->isKeyDown(aie::INPUT_KEY_K)) {	//Brake
-		//Brake
-		m_brake = 0.8f;
+	
+	//Brake
+	if (input->isKeyDown(aie::INPUT_KEY_K) ||
+		input->isKeyDown(aie::INPUT_KEY_DOWN)) {
+		onBrake();
 	}
 	else
-		m_brake = 0;
+		offBrake();
 
 	if (input->isKeyDown(aie::INPUT_KEY_J)) {	//Steer left
 		//Simple

@@ -91,7 +91,7 @@ private:
 
 	//Braking
 	float		m_cBraking;
-	float		m_brake;
+	float		m_brake;						//Brake multiplier
 
 	//Gears
 	struct {
@@ -143,7 +143,6 @@ public:
 
 	//Braking
 	Vector3		ForceBraking();					//Returns car's braking force
-	float		getBrakeFactor() { return m_brake; }		//Returns the current brake factor (brake amount, calculated from brake input between 0-1.0f?) 
 
 	//Resistances
 	Vector3		ForceDrag();					//Return force of air resistance
@@ -176,6 +175,11 @@ public:
 	void		offThrottle();									//Take 'foot' off the throttle
 	//float		Throttle() const { return m_throttle; }			//Returns current throttle position (0.0 - 1.0)
 	//void		setThrottle(float val) { m_throttle = val; }
+
+	//Braking
+	void		onBrake();							
+	void		offBrake();
+	//float		Brake() const { return m_brake; }
 
 	//Integration
 	float		calcNewRPM();					//RPM calculated back from the wheel (Do after calculating ForceWheel)
