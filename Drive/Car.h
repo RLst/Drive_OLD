@@ -52,36 +52,34 @@ class Car : public SceneObject
 private:
 	//ALL UNITS IN SI unless otherwise specified
 
-	//Physics
-	//float		m_coeffDrag = 0.4257;			//Corvette
-	//float		m_cRR = 12.8;					//Corvette; unconfirmed
-
-	//Temp
+	//FOR TESTING
 	float m_steerSpeed;
-
-	//Core
-	Vector3		m_accel;
-	Vector3		m_vel;							//v; vector
-	Vector3		m_pos;
-	float		m_zRotation;
-
-	//Constants
-	float		m_coeffDrag;
-	float		m_factorRR;						//Factor to multiply with Drag constant to get Roll Resist constant
-
-	////Specifications
-	float		m_mass;
-	float		m_areaFront;
-
 	////TYRE_SPEED			m_tyreSpeedRating;
 	////TYRE				m_tyreConstruction;
 
+	//Transforms
+	Vector3		m_accel;
+	Vector3		m_vel;
+	Vector3		m_pos;
+	float		m_zRotation;
+
+	//Resistance
+	float		m_coeffDrag;
+	float		m_factorRR;						//Factor to multiply with Drag constant to get Roll Resist constant
+												//ie: 30 for rolling, 20000 for caterpillar tracks
+
+	//Physical
+	float		m_mass;
+	float		m_areaFront;
+
 	//Engine
-	float		m_arbEngineForce;
+	//float		m_arbEngineForce;
 	float		m_rpm;
+	float		m_throttle;
 
 	//Braking
 	float		m_cBraking;
+	float		m_brake;
 
 	//Gears
 	struct {
@@ -96,7 +94,7 @@ private:
 		float	final;
 	} m_gearRatio;
 	GEAR m_current_gear;
-	float m_transEfficiency;
+	float m_transmissionEff;
 
 	//Tyres and wheels
 	float		m_wheelRadius;
@@ -126,53 +124,55 @@ public:
 	float		cDrag();						
 	float		cRR();
 
+	///////////
 	////Forces
-	Vector3		ForceLongitudinal();			//Returns sum longitudinal force on car
-
-	//Drive
-	Vector3		ForceTraction();				//Returns car's driving force
-
-	//Resistance
-	Vector3		ForceDrag();					//Return force of air resistance
-	Vector3		ForceRollResist();				//Returns force of rolling resistance
+	/////////
+	Vector3		ForceWheel();					//aka. ForceWheel; Driving force exerted by drive wheels; ultimately the EngineForce()?
 
 	//Braking
 	Vector3		ForceBraking();					//Returns car's braking force
 	float		getBrakeFactor();				//Returns the current brake factor (brake amount, calculated from brake input between 0-1.0f?) 
 
+	//Resistances
+	Vector3		ForceDrag();					//Return force of air resistance
+	Vector3		ForceRollResist();				//Returns force of rolling resistance
+
+	//Longitudinal
+	Vector3		ForceLongitudinal();			//Returns sum longitudinal force on car
+
+	//Engine	
+	float		EngineTorque(float rpm);		//Lookup actual engine torque from curve or table
+
+	//Wheel
+	float		WheelTorque();					//Gets the wheel torque of the car by other calcs
+	float		WheelRadius();					//Get wheel radius by calculating wheel sizes etc
+	float		WheelAngularVel();
+
 	//Weight transfer
 	float		Weight();						//Total weight of the car
 	float		WeightOnFrontAxle();
 	float		WeightOnRearAxle();
-	Vector3		testForceWheelTractionMax(WHEEL wheel, float Weight);		//Maximum force the wheel can exert
 
-	//Wheel
-	float		WheelRadius();					//Get wheel radius by calculating wheel sizes etc
-	float		simpleWheelTorque();			//Gets the wheel torque of the car by other calcs
-	
-	float		simpleWheelAngularVel();
-	float		WheelAngularVel();
-
-	//Engine
-	float		oldRPM();						//TEMP; needs to be called before calcRPM()
-	float		simpleCalcRPM();				//RPM calculated from car velocity regardless of tire spin/slip
-	float		calcRPM();						//RPM calculated back from the wheel
-
-	float		Throttle();						//Current actual throttle
-
-	float		simpleEngineTorque();			//Temporary function that returns some kinda engine torque for testing purposes
-	float		EngineTorque(float rpm);					//Lookup actual engine torque from curve or table
-	Vector3		ForceWheel();					//aka. ForceWheel; Driving force exerted by drive wheels; ultimately the EngineForce()?
-
-	//*Transmission
+	//Transmission
 	GEAR		CurrentGear();					//Returns currently selected gear
 	float		GearRatio(GEAR gear);			//Returns the actual gear ratio of input gear
 
-	//*Integration
+	//Accelerator pedal
+	void		onThrottle();					//Increase throttle a bit
+	void		offThrottle();					//Take 'foot' off the throttle
+	void		setThrottle(float val) { m_throttle = val; }
+	float		Throttle() const;				//Returns current throttle position (0.0 - 1.0)
+
+	//Integration
+	float		calcNewRPM();					//RPM calculated back from the wheel (Do after calculating ForceWheel)
 	Vector3		calcAccel();
 	Vector3		calcVel(float deltaTime);
 	Vector3		calcPos(float deltaTime);
 
+	//////////
+	//SIMPLES
+	////////
+	float		WheelAngularVel();
 
 	//UPDATE
 	void		onUpdate(float deltaTime);

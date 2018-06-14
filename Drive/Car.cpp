@@ -3,6 +3,7 @@
 #include <Input.h>
 #include <Texture.h>
 #include <Renderer2D.h>
+#include <cassert>
 
 Car::Car(const char * textureFilePath)
 {
@@ -31,6 +32,7 @@ Car::Car(const char * textureFilePath)
 
 	//Other sets
 	m_steerSpeed = 2.0f;
+	m_current_gear = FIRST;
 
 	//Texture
 	m_texture = new aie::Texture(textureFilePath);
@@ -38,14 +40,6 @@ Car::Car(const char * textureFilePath)
 
 Car::~Car()
 {}
-
-//Vector3 Car::ForceTraction()
-//{
-//	//Returns the force vector 
-//	//Traction force = Wheel torque / Wheel radius
-//	return Heading() * EngineForce();
-//	//return Heading() * WheelTorque() * WheelRadius();
-//}
 
 Vector3 Car::ForceDrag()
 {
@@ -83,6 +77,26 @@ Vector3 Car::ForceBraking()
 	}
 }
 
+Vector3 Car::Heading()
+{
+	return m_worldTrans.yAxis.normalised();		//Should already be normalised anyways
+}
+
+float Car::cDrag()
+{
+	return 0.5f * m_coeffDrag * m_areaFront * RHO * m_vel.dot(m_vel);
+}
+
+float Car::cRR()
+{
+	//m_factorRR is a drag constant multiple
+	//Adjust accordingly
+	//General values:
+	//30 for smooth normal roads; 20000-25000 for caterpillar tracks
+	return cDrag() * m_factorRR;
+}
+
+
 float Car::getBrakeFactor()
 {
 	return m_cBraking;
@@ -93,12 +107,6 @@ float Car::Weight()
 	return m_mass * GRAVITY;
 }
 
-Vector3 Car::testForceWheelTractionMax(WHEEL wheel, float Weight)
-{
-
-	return Vector3();
-}
-
 float Car::WheelRadius()
 {
 	return m_wheelRadius;
@@ -107,14 +115,7 @@ float Car::WheelRadius()
 float Car::WheelAngularVel()
 {
 	//TEMP; SIMPLE
-	return simpleWheelAngularVel();
-}
-
-float Car::simpleWheelAngularVel()
-{
-	float result;
-	result = m_vel.magnitude() / WheelRadius();		//.magnitude() because need to return a float
-	return result;
+	return WheelAngularVel();
 }
 
 float Car::WeightOnFrontAxle()
@@ -127,47 +128,48 @@ float Car::WeightOnRearAxle()
 	return ((m_distFAxle / m_wheelBase) * Weight()) + ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());
 }
 
-float Car::oldRPM()
-{
-	return m_rpm;
-}
-
-float Car::simpleCalcRPM()
-{
-	return simpleWheelAngularVel() * GearRatio(CurrentGear()) * GearRatio(FINAL) * 60/2*PI;
-}
-
 //float Car::calcRPM()
 //{ 
 //	m_rpm = WheelAngularVel() * GearRatio(CurrentGear()) * GearRatio(FINAL) * 60/2*PI;
 //	return m_rpm;	//???? Required
 //}
 
-float Car::Throttle()
+void Car::onThrottle()
 {
-	return 0.5f;
+	m_throttle += 0.1f;
+	//Clamp
+	if (m_throttle > 1.0f)
+		m_throttle = 1.0f;
+}
+
+void Car::offThrottle()
+{
+	m_throttle -= 0.5f;
+	//Clamp
+	if (m_throttle < 0)
+		m_throttle = 0;
+}
+
+float Car::Throttle() const
+{
+	return m_throttle;
 }
 
 float Car::EngineTorque(float rpm)
 {
+	//TEMP!!
+	return 100.0f * Throttle();			//Return some arbitrary torque (Nm) * throttle multiplier
+
 	//Need: RPM, Throttle amount 0-1.0f
 	//float rpm = calcRPM();
 	//float throttle = Throttle();
 	//To be completed...
-
-	//TEMP!!
-	return simpleEngineTorque();			///TEMP.. in Newton Metres; To be completed
-}
-
-float Car::simpleEngineTorque()
-{
-	return 100.0f;			//Return some arbitrary torque (Nm) * throttle multiplier
 }
 
 Vector3 Car::ForceWheel()
 {
 	//TEMP: oldRPM() just for temps... refine later
-	return Heading() * EngineTorque(oldRPM()) * GearRatio(CurrentGear()) * GearRatio(FINAL) * m_transEfficiency / WheelRadius();
+	return Heading() * EngineTorque(m_rpm) * GearRatio(CurrentGear()) * GearRatio(FINAL) * m_transmissionEff / WheelRadius();
 }
 
 GEAR Car::CurrentGear()
@@ -205,8 +207,14 @@ float Car::GearRatio(GEAR gear)
 	case FINAL:
 		return m_gearRatio.final;
 		break;
-
+	default:
+		assert(false);
 	}
+}
+
+float Car::calcNewRPM()
+{
+	return WheelAngularVel() * GearRatio(CurrentGear()) * GearRatio(FINAL) * 60/2*PI;
 }
 
 Vector3 Car::calcAccel()
@@ -224,25 +232,22 @@ Vector3 Car::calcPos(float deltaTime)
 	return m_pos + calcVel(deltaTime) * deltaTime;
 }
 
-Vector3 Car::Heading()
+
+//////////
+//SIMPLES
+////////
+float Car::WheelTorque()
 {
-	return m_worldTrans.yAxis.normalised();		//Should already be normalised anyways
+	return EngineTorque(m_rpm) * GearRatio(CurrentGear()) * GearRatio(FINAL) * m_transmissionEff;
+}
+float Car::WheelAngularVel()
+{
+	float result;
+	result = m_vel.magnitude() / WheelRadius();		//.magnitude() because need to return a float
+	return result;
 }
 
-float Car::cDrag()
-{
-	return 0.5f * m_coeffDrag * m_areaFront * RHO * m_vel.dot(m_vel);
-}
 
-float Car::cRR()
-{
-	//m_factorRR is a drag constant multiple
-	//Adjust accordingly
-	//General values:
-	//30 for smooth normal roads
-	//20000-25000 for caterpillar tracks
-	return cDrag() * m_factorRR;
-}
 
 void Car::onUpdate(float deltaTime)
 {
@@ -251,9 +256,17 @@ void Car::onUpdate(float deltaTime)
 
 	////CONTROLS
 	if (input->isKeyDown(aie::INPUT_KEY_I)) {	//Accelerate
+		onThrottle();
 	}
+	else
+		offThrottle();
+
 	if (input->isKeyDown(aie::INPUT_KEY_K)) {	//Brake
+		//Brake
+		m_brake = 0.8f;
 	}
+	else
+		m_brake = 0;
 
 	if (input->isKeyDown(aie::INPUT_KEY_J)) {	//Steer left
 		//Simple
