@@ -172,4 +172,7 @@ public:
 	//UPDATE
 	void		onUpdate(float deltaTime);
 	void		onDraw(aie::Renderer2D* renderer);
+
+	//DEBUGS
+	void		printDebugs();
 };

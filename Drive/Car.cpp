@@ -304,11 +304,21 @@ void Car::onUpdate(float deltaTime)
 	//Apply final tranformations
 	translate(m_vel);
 	rotate(m_zRotation);
+	//DEBUG
+	printDebugs();
 }
 
 void Car::onDraw(aie::Renderer2D * renderer)
 {
 	//Draw the car
 	renderer->drawSpriteTransformed3x3(m_texture, (float*)&m_worldTrans);
+}
+
+void Car::printDebugs()
+{
+	std::cout << "Gear: " << m_current_gear << std::endl;
+	std::cout << "RPM: " << calcNewRPM() << std::endl;
+	std::cout << "Wheel force: " << ForceWheel().magnitude() << std::endl;
+	std::cout << "Brake force: " << ForceBraking().magnitude() << std::endl;
 }
 
