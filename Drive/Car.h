@@ -3,6 +3,7 @@
 #include <Vector3.h>
 #include <Matrix3.h>
 #include "SceneObject.h"
+#include <iostream>
 
 namespace aie {
 	class Texture;
