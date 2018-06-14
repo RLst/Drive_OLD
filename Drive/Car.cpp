@@ -10,16 +10,25 @@ Car::Car(const char * textureFilePath)
 	m_pos = Vector3();
 	m_vel = Vector3();
 	m_accel = Vector3();
+	m_zRotation = 0;
 
 	//Constants/coefficients
 	m_coeffDrag = 0.3f;		//For a Corvette
 	m_factorRR = 30.0f;		//For the average car driving on tarmac
-	m_cBraking = 100.0f;
 
-	//Set Engine
+	//Physics
+	m_mass = 1250.00f;
+	m_areaFront = 2.2f;
+
+	//Engine
 	m_rpm = 1000.0;
+	m_throttle = 0;
 
-	//Set Transmission
+	//Braking
+	m_cBraking = 100.0f;
+	m_brake = 0;
+
+	//Transmission
 	m_gearRatio.reverse = -2.90f;
 	m_gearRatio.neutral = 0;
 	m_gearRatio.first = 2.66f;
@@ -29,10 +38,16 @@ Car::Car(const char * textureFilePath)
 	m_gearRatio.fifth = 0.74f;
 	m_gearRatio.sixth = 0.5f;
 	m_gearRatio.final = 3.42f;
-
-	//Other sets
-	m_steerSpeed = 2.0f;
 	m_current_gear = FIRST;
+	m_transmissionEff = 0.7f;
+
+	//Other
+	m_steerSpeed = 2.0f;
+	m_wheelRadius = 0.34f;
+	m_mu = 1.0f;
+
+	//Weight
+	m_wheelBase = 1.5f;
 
 	//Texture
 	m_texture = new aie::Texture(textureFilePath);
@@ -40,42 +55,6 @@ Car::Car(const char * textureFilePath)
 
 Car::~Car()
 {}
-
-Vector3 Car::ForceDrag()
-{
-	//Drag force = - Drag constant * velocity * |velocity|
-	return -m_coeffDrag * m_vel * m_vel.magnitude();
-}
-
-Vector3 Car::ForceRollResist()
-{
-	//Rolling Resistance Force = RollResist constant * Velocity
-	return -cRR() * m_vel;
-}
-
-Vector3 Car::ForceLongitudinal()
-{
-	//Longitudinal force = Traction force + Drag force + RollResist force + Gravity force
-	return ForceWheel() + ForceBraking() + ForceDrag() + ForceRollResist();
-	//return ForceTraction() + ForceBraking() + ForceDrag() + ForceRollResist();
-}
-
-//Vector3 Car::ForceGravity()
-//{
-//	return (Heading() * m_mass) * g_gravity * sinf(m_slopeAngle);
-//}
-
-Vector3 Car::ForceBraking()
-{
-	Vector3 brakeForce;
-	//Brakes only work if the car is moving...
-	if (m_vel.magnitude() > 0) {
-		return -Heading() * getBrakeFactor();
-	}
-	else {	//...otherwise return a null vector
-		return Vector3();
-	}
-}
 
 Vector3 Car::Heading()
 {
@@ -96,27 +75,76 @@ float Car::cRR()
 	return cDrag() * m_factorRR;
 }
 
-
-float Car::getBrakeFactor()
+Vector3 Car::ForceWheel()
 {
-	return m_cBraking;
+	//TEMP: oldRPM() just for temps... refine later
+	return Heading() * EngineTorque(m_rpm) * GearRatio(CurrentGear()) * GearRatio(FINAL) * m_transmissionEff / WheelRadius();
 }
+
+Vector3 Car::ForceBraking()
+{
+	Vector3 brakeForce;
+	//Brakes only work if the car is moving...
+	if (m_vel.magnitude() > 0) {
+		return -Heading() * getBrakeFactor();
+	}
+	else {	//...otherwise return a null vector
+		return Vector3();
+	}
+}
+
+Vector3 Car::ForceDrag()
+{
+	//Drag force = - Drag constant * velocity * |velocity|
+	return -m_coeffDrag * m_vel * m_vel.magnitude();
+}
+
+Vector3 Car::ForceRollResist()
+{
+	//Rolling Resistance Force = RollResist constant * Velocity
+	return -cRR() * m_vel;
+}
+
+Vector3 Car::ForceLongitudinal()
+{
+	//Longitudinal force = Traction force + Drag force + RollResist force + Gravity force
+	return ForceWheel() + ForceBraking() + ForceDrag() + ForceRollResist();
+	//return ForceTraction() + ForceBraking() + ForceDrag() + ForceRollResist();
+}
+
+float Car::EngineTorque(float rpm)
+{
+	//TEMP!!
+	return 100.0f * Throttle();			//Return some arbitrary torque (Nm) * throttle multiplier
+
+										//Need: RPM, Throttle amount 0-1.0f
+										//float rpm = calcRPM();
+										//float throttle = Throttle();
+										//To be completed...
+}
+
+float Car::WheelTorque()
+{
+	return EngineTorque(m_rpm) * GearRatio(CurrentGear()) * GearRatio(FINAL) * m_transmissionEff;
+}
+
+float Car::WheelAngularVel()
+{
+	float result;
+	result = m_vel.magnitude() / WheelRadius();		//.magnitude() because need to return a float
+	return result;
+}
+//float Car::WheelAngularVel()  //ANOTHER ONE
+//{
+//	//TEMP; 
+//	return m_rpm / GearRatio(CurrentGear()) * GearRatio(FINAL) * 2 * PI / 60.0f;
+//}
 
 float Car::Weight()
 {
 	return m_mass * GRAVITY;
 }
 
-float Car::WheelRadius()
-{
-	return m_wheelRadius;
-}
-
-float Car::WheelAngularVel()
-{
-	//TEMP; SIMPLE
-	return WheelAngularVel();
-}
 
 float Car::WeightOnFrontAxle()
 {
@@ -155,22 +183,7 @@ float Car::Throttle() const
 	return m_throttle;
 }
 
-float Car::EngineTorque(float rpm)
-{
-	//TEMP!!
-	return 100.0f * Throttle();			//Return some arbitrary torque (Nm) * throttle multiplier
 
-	//Need: RPM, Throttle amount 0-1.0f
-	//float rpm = calcRPM();
-	//float throttle = Throttle();
-	//To be completed...
-}
-
-Vector3 Car::ForceWheel()
-{
-	//TEMP: oldRPM() just for temps... refine later
-	return Heading() * EngineTorque(m_rpm) * GearRatio(CurrentGear()) * GearRatio(FINAL) * m_transmissionEff / WheelRadius();
-}
 
 GEAR Car::CurrentGear()
 {
@@ -236,16 +249,8 @@ Vector3 Car::calcPos(float deltaTime)
 //////////
 //SIMPLES
 ////////
-float Car::WheelTorque()
-{
-	return EngineTorque(m_rpm) * GearRatio(CurrentGear()) * GearRatio(FINAL) * m_transmissionEff;
-}
-float Car::WheelAngularVel()
-{
-	float result;
-	result = m_vel.magnitude() / WheelRadius();		//.magnitude() because need to return a float
-	return result;
-}
+
+
 
 
 
@@ -306,3 +311,4 @@ void Car::onDraw(aie::Renderer2D * renderer)
 	//Draw the car
 	renderer->drawSpriteTransformed3x3(m_texture, (float*)&m_worldTrans);
 }
+

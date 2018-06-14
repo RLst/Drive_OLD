@@ -131,7 +131,7 @@ public:
 
 	//Braking
 	Vector3		ForceBraking();					//Returns car's braking force
-	float		getBrakeFactor();				//Returns the current brake factor (brake amount, calculated from brake input between 0-1.0f?) 
+	float		getBrakeFactor() { return m_brake; }		//Returns the current brake factor (brake amount, calculated from brake input between 0-1.0f?) 
 
 	//Resistances
 	Vector3		ForceDrag();					//Return force of air resistance
@@ -145,7 +145,7 @@ public:
 
 	//Wheel
 	float		WheelTorque();					//Gets the wheel torque of the car by other calcs
-	float		WheelRadius();					//Get wheel radius by calculating wheel sizes etc
+	float		WheelRadius() { return m_wheelRadius; }	//Get wheel radius by calculating wheel sizes etc
 	float		WheelAngularVel();
 
 	//Weight transfer
@@ -168,11 +168,6 @@ public:
 	Vector3		calcAccel();
 	Vector3		calcVel(float deltaTime);
 	Vector3		calcPos(float deltaTime);
-
-	//////////
-	//SIMPLES
-	////////
-	float		WheelAngularVel();
 
 	//UPDATE
 	void		onUpdate(float deltaTime);
