@@ -20,7 +20,7 @@ bool DriveApp::startup() {
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
 
 	////////////////////////////
-	s13 = new Car();
+	s13 = new Car("../bin/textures/Silvia.png");
 	s13->setPosition(getWindowWidth() / 2.0f, getWindowHeight() / 2.0f);
 	///////////////////////////
 

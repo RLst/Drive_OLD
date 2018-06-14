@@ -4,7 +4,7 @@
 #include <Texture.h>
 #include <Renderer2D.h>
 
-Car::Car()
+Car::Car(const char * textureFilePath)
 {
 	m_pos = Vector3();
 	m_vel = Vector3();
@@ -33,7 +33,7 @@ Car::Car()
 	m_steerSpeed = 2.0f;
 
 	//Texture
-	m_texture = new aie::Texture("../bin/textures/car.png");
+	m_texture = new aie::Texture(textureFilePath);
 }
 
 Car::~Car()

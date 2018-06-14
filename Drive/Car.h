@@ -116,6 +116,7 @@ private:
 
 public:
 	Car();
+	Car(const char * textureFilePath);
 	~Car();
 
 	//Heading
