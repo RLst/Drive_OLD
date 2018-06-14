@@ -20,6 +20,17 @@ enum GEAR
 	SIXTH,
 	FINAL = 99
 };
+inline const GEAR& operator ++ (GEAR& gear, int) {
+	if (gear == SIXTH) return SIXTH;
+	int temp = gear;
+	return gear = static_cast<GEAR>(++temp);
+}
+inline const GEAR& operator -- (GEAR& gear, int) {
+	if (gear == REVERSE) return REVERSE;
+	int temp = gear;
+	return gear = static_cast<GEAR>(--temp);
+}
+
 enum WHEEL
 {
 	FL = 0,
@@ -157,6 +168,8 @@ public:
 	//Transmission
 	GEAR		CurrentGear();					//Returns currently selected gear
 	float		GearRatio(GEAR gear);			//Returns the actual gear ratio of input gear
+	void		ShiftUp();
+	void		ShiftDown();
 
 	//Accelerator pedal
 	void		onThrottle();					//Increase throttle a bit

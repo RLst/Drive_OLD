@@ -225,6 +225,16 @@ float Car::GearRatio(GEAR gear)
 	}
 }
 
+void Car::ShiftUp()
+{
+	m_current_gear++;
+}
+
+void Car::ShiftDown()
+{
+	m_current_gear--;
+}
+
 float Car::calcNewRPM()
 {
 	return WheelAngularVel() * GearRatio(CurrentGear()) * GearRatio(FINAL) * 60/2*PI;
@@ -284,6 +294,16 @@ void Car::onUpdate(float deltaTime)
 	else {
 		m_zRotation = 0;
 	}
+
+
+	//Gear shifting
+	if (input->wasKeyPressed(aie::INPUT_KEY_A)) {
+		ShiftUp();
+	}
+	if (input->wasKeyPressed(aie::INPUT_KEY_Z)) {
+		ShiftDown();
+	}
+
 
 	////Calculate resistant forces
 	ForceDrag();	//Done
