@@ -270,7 +270,9 @@ void Car::onUpdate(float deltaTime)
 	auto input = aie::Input::getInstance();
 
 	////CONTROLS
-	if (input->isKeyDown(aie::INPUT_KEY_I)) {	//Accelerate
+	//Accelerate
+	if (input->isKeyDown(aie::INPUT_KEY_I) ||
+		input->isKeyDown(aie::INPUT_KEY_UP)) {
 		onThrottle();
 	}
 	else

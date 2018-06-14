@@ -87,7 +87,7 @@ private:
 	//Engine
 	//float		m_arbEngineForce;
 	float		m_rpm;
-	float		m_throttle;
+	float		m_throttle;						//Throttle multiplier
 
 	//Braking
 	float		m_cBraking;
@@ -171,11 +171,11 @@ public:
 	void		ShiftUp();
 	void		ShiftDown();
 
-	//Accelerator pedal
-	void		onThrottle();					//Increase throttle a bit
-	void		offThrottle();					//Take 'foot' off the throttle
-	void		setThrottle(float val) { m_throttle = val; }
-	float		Throttle() const;				//Returns current throttle position (0.0 - 1.0)
+	//Accelerating
+	void		onThrottle();									//Increase throttle a bit
+	void		offThrottle();									//Take 'foot' off the throttle
+	//float		Throttle() const { return m_throttle; }			//Returns current throttle position (0.0 - 1.0)
+	//void		setThrottle(float val) { m_throttle = val; }
 
 	//Integration
 	float		calcNewRPM();					//RPM calculated back from the wheel (Do after calculating ForceWheel)
