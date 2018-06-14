@@ -27,6 +27,9 @@
     <ClCompile Include="SceneObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Transmission.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DriveApp.h">
@@ -39,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameDefines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transmission.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
