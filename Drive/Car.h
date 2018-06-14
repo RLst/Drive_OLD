@@ -59,6 +59,7 @@ enum WHEEL
 //};
 
 
+
 class Car : public SceneObject
 {
 private:
@@ -150,6 +151,9 @@ public:
 
 	//Longitudinal
 	Vector3		ForceLongitudinal();			//Returns sum longitudinal force on car
+
+
+	Vector3		ForceLateral();
 
 	//Engine	
 	float		EngineTorque(float rpm);		//Lookup actual engine torque from curve or table

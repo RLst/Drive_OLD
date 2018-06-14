@@ -39,7 +39,7 @@ Car::Car(const char * textureFilePath)
 	m_gearRatio.sixth = 0.5f;
 	m_gearRatio.final = 3.42f;
 	m_current_gear = FIRST;
-	m_transmissionEff = 0.7f;
+	m_transmissionEff = 0.8f;
 
 	//Other
 	m_steerSpeed = 2.0f;
@@ -83,14 +83,11 @@ Vector3 Car::ForceWheel()
 
 Vector3 Car::ForceBraking()
 {
-	Vector3 brakeForce;
 	//Brakes only work if the car is moving...
 	if (m_vel.magnitude() > 0) {
-		return -Heading() * getBrakeFactor();
+		return -Heading() * m_cBraking * m_brake;
 	}
-	else {	//...otherwise return a null vector
-		return Vector3();
-	}
+	return Vector3();  //...otherwise return a null vector
 }
 
 Vector3 Car::ForceDrag()
@@ -115,12 +112,12 @@ Vector3 Car::ForceLongitudinal()
 float Car::EngineTorque(float rpm)
 {
 	//TEMP!!
-	return 100.0f * Throttle();			//Return some arbitrary torque (Nm) * throttle multiplier
+	return 500.0f * m_throttle;			//Return some arbitrary torque (Nm) * throttle multiplier
 
-										//Need: RPM, Throttle amount 0-1.0f
-										//float rpm = calcRPM();
-										//float throttle = Throttle();
-										//To be completed...
+	//Need: RPM, Throttle amount 0-1.0f
+	//float rpm = calcRPM();
+	//float throttle = Throttle();
+	//To be completed...
 }
 
 float Car::WheelTorque()
@@ -155,12 +152,6 @@ float Car::WeightOnRearAxle()
 {
 	return ((m_distFAxle / m_wheelBase) * Weight()) + ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());
 }
-
-//float Car::calcRPM()
-//{ 
-//	m_rpm = WheelAngularVel() * GearRatio(CurrentGear()) * GearRatio(FINAL) * 60/2*PI;
-//	return m_rpm;	//???? Required
-//}
 
 void Car::onThrottle()
 {
@@ -265,14 +256,6 @@ Vector3 Car::calcPos(float deltaTime)
 }
 
 
-//////////
-//SIMPLES
-////////
-
-
-
-
-
 void Car::onUpdate(float deltaTime)
 {
 	//Get input instance
@@ -295,11 +278,15 @@ void Car::onUpdate(float deltaTime)
 	else
 		offBrake();
 
-	if (input->isKeyDown(aie::INPUT_KEY_J)) {	//Steer left
+	//Steer left
+	if (input->isKeyDown(aie::INPUT_KEY_J)||
+		input->isKeyDown(aie::INPUT_KEY_LEFT)) {
 		//Simple
 		m_zRotation = m_steerSpeed * deltaTime;
 	}
-	else if (input->isKeyDown(aie::INPUT_KEY_L)) {	//Steer right
+	//Steer right
+	else if (input->isKeyDown(aie::INPUT_KEY_L) ||
+			input->isKeyDown(aie::INPUT_KEY_RIGHT)) {	
 		//Simple
 		m_zRotation = -m_steerSpeed * deltaTime;
 	}
@@ -316,14 +303,6 @@ void Car::onUpdate(float deltaTime)
 		ShiftDown();
 	}
 
-
-	////Calculate resistant forces
-	ForceDrag();	//Done
-	ForceRollResist();	//Done
-
-	////Find total longitudinal force
-	ForceLongitudinal();
-
 	////Find acceleration
 	m_accel = calcAccel();
 
@@ -336,6 +315,10 @@ void Car::onUpdate(float deltaTime)
 	//Apply final tranformations
 	translate(m_vel);
 	rotate(m_zRotation);
+
+	//calc and assign new rpm
+	m_rpm = calcNewRPM();
+
 	//DEBUG
 	printDebugs();
 }
