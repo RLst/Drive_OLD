@@ -66,7 +66,9 @@ private:
 	//ALL UNITS IN SI unless otherwise specified
 
 	//FOR TESTING
-	float m_steerSpeed;
+	float m_rotateSpeed;
+	float m_rotateAllowance;
+	float m_rotateAllowanceVel;
 	////TYRE_SPEED			m_tyreSpeedRating;
 	////TYRE				m_tyreConstruction;
 

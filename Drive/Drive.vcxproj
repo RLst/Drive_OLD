@@ -164,6 +164,7 @@
   <ItemGroup>
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="DriveApp.cpp" />
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Transmission.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Car.h" />
     <ClInclude Include="DriveApp.h" />
     <ClInclude Include="GameDefines.h" />
+    <ClInclude Include="GUI.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Transmission.h" />
   </ItemGroup>

@@ -7,10 +7,16 @@
 
 Car::Car(const char * textureFilePath)
 {
+	//Pseudo steering
+	m_rotateSpeed = 3.0f;
+	m_rotateAllowance = NULL;
+	m_rotateAllowanceVel = 5.0f;
+
+	//Transformations
 	m_pos = Vector3();
 	m_vel = Vector3();
 	m_accel = Vector3();
-	m_zRotation = 0;
+	m_zRotation = NULL;
 
 	//Constants/coefficients
 	m_coeffDrag = 0.3f;		//For a Corvette
@@ -22,15 +28,15 @@ Car::Car(const char * textureFilePath)
 
 	//Engine
 	m_rpm = 1000.0;
-	m_throttle = 0;
+	m_throttle = NULL;
 
 	//Braking
 	m_cBraking = 10000.0f;
-	m_brake = 0;
+	m_brake = NULL;
 
 	//Transmission
 	m_gearRatio.reverse = -2.90f;
-	m_gearRatio.neutral = 0;
+	m_gearRatio.neutral = 0.0f;
 	m_gearRatio.first = 2.66f;
 	m_gearRatio.second = 1.78f;
 	m_gearRatio.third = 1.30f;
@@ -41,8 +47,7 @@ Car::Car(const char * textureFilePath)
 	m_current_gear = FIRST;
 	m_transmissionEff = 0.8f;
 
-	//Other
-	m_steerSpeed = 2.0f;
+	//Dimensions
 	m_wheelRadius = 0.34f;
 	m_mu = 1.0f;
 
@@ -77,7 +82,6 @@ float Car::cRR()
 
 Vector3 Car::ForceWheel()
 {
-	//TEMP: oldRPM() just for temps... refine later
 	return Heading() * EngineTorque(m_rpm) * GearRatio(CurrentGear()) * GearRatio(FINAL) * m_transmissionEff / WheelRadius();
 }
 
@@ -155,7 +159,8 @@ float Car::WeightOnRearAxle()
 
 void Car::onThrottle()
 {
-	m_throttle += 0.1f;
+	static float onThrottleAmount = 0.05f;
+	m_throttle += onThrottleAmount;
 	//Clamp
 	if (m_throttle > 1.0f)
 		m_throttle = 1.0f;
@@ -163,7 +168,8 @@ void Car::onThrottle()
 
 void Car::offThrottle()
 {
-	m_throttle -= 0.5f;
+	static float offThrottleAmmount = 0.25f;
+	m_throttle -= offThrottleAmmount;
 	//Clamp
 	if (m_throttle < 0)
 		m_throttle = 0;
@@ -171,7 +177,8 @@ void Car::offThrottle()
 
 void Car::onBrake()
 {
-	m_brake += 0.1f;
+	static float brakeAmount = 0.05;
+	m_brake += brakeAmount;
 	//Clamp
 	if (m_brake > 1.0f)
 		m_brake = 1.0f;
@@ -179,7 +186,8 @@ void Car::onBrake()
 
 void Car::offBrake()
 {
-	m_brake -= 0.5f;
+	static float offBrakeAmount = 0.25f;
+	m_brake -= offBrakeAmount;
 	//Clamp
 	if (m_brake < 0)
 		m_brake = 0;
@@ -281,19 +289,26 @@ void Car::onUpdate(float deltaTime)
 	//Steer left
 	if (input->isKeyDown(aie::INPUT_KEY_J)||
 		input->isKeyDown(aie::INPUT_KEY_LEFT)) {
-		//Simple
-		m_zRotation = m_steerSpeed * deltaTime;
+
+		//Simple steering limit in relation to car speed
+		m_rotateAllowance = m_vel.magnitude()/m_rotateAllowanceVel;
+		if (m_rotateAllowance > 1)	m_rotateAllowance = 1.0f;
+		
+		m_zRotation = m_rotateSpeed * m_rotateAllowance * deltaTime;
 	}
 	//Steer right
 	else if (input->isKeyDown(aie::INPUT_KEY_L) ||
 			input->isKeyDown(aie::INPUT_KEY_RIGHT)) {	
-		//Simple
-		m_zRotation = -m_steerSpeed * deltaTime;
+		
+		//Simple steering limit in relation to car speed
+		m_rotateAllowance = m_vel.magnitude() / m_rotateAllowanceVel;
+		if (m_rotateAllowance > 1)	m_rotateAllowance = 1.0f;
+
+		m_zRotation = -m_rotateSpeed * m_rotateAllowance * deltaTime;
 	}
 	else {
 		m_zRotation = 0;
 	}
-
 
 	//Gear shifting
 	if (input->wasKeyPressed(aie::INPUT_KEY_A)) {
@@ -312,11 +327,11 @@ void Car::onUpdate(float deltaTime)
 	//TEMP; Stop car from sliding 
 	m_vel = Heading() * m_vel.magnitude();
 
-	//Apply final tranformations
+	//Apply final transformations
 	translate(m_vel);
 	rotate(m_zRotation);
 
-	//calc and assign new rpm
+	//Calc and assign new rpm
 	m_rpm = calcNewRPM();
 
 	//DEBUG
