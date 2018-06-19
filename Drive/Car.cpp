@@ -8,7 +8,7 @@
 Car::Car(const char * textureFilePath)
 {
 	//Pseudo steering
-	m_rotateSpeed = 3.0f;
+	m_rotateSpeed = 5.0f;
 	m_rotateAllowance = NULL;
 	m_rotateAllowanceVel = 5.0f;
 

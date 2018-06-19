@@ -4,6 +4,7 @@
 #include <Matrix3.h>
 #include "SceneObject.h"
 #include <iostream>
+#include "Subject.h"
 
 namespace aie {
 	class Texture;
@@ -60,7 +61,9 @@ enum WHEEL
 
 
 
-class Car : public SceneObject
+class Car
+	:	public SceneObject, 
+		public Subject
 {
 private:
 	//ALL UNITS IN SI unless otherwise specified
@@ -196,6 +199,10 @@ public:
 	//UPDATE
 	void		onUpdate(float deltaTime);
 	void		onDraw(aie::Renderer2D* renderer);
+
+	//Observer/sunject
+	Subject*	m_subject;
+	//void		notify(const Car& car) override;
 
 	//DEBUGS
 	void		printDebugs();

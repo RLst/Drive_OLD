@@ -166,7 +166,9 @@
     <ClCompile Include="DriveApp.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Observer.cpp" />
     <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="Subject.cpp" />
     <ClCompile Include="Transmission.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,7 +176,9 @@
     <ClInclude Include="DriveApp.h" />
     <ClInclude Include="GameDefines.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="Observer.h" />
     <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="Subject.h" />
     <ClInclude Include="Transmission.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
