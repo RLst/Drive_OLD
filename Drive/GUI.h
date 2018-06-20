@@ -1,22 +1,25 @@
 #pragma once
-#include "Observer.h"
 
 namespace aie {
 	class Renderer2D;
 }
 
-class GUI : public Observer
+class GUI 
 {
 private:
-	Car * m_carObserved;
+	Car*	m_subject;
+
 public:
-	GUI();
+	GUI(Car* car);
 	~GUI();
 
-	void	startup();
+	//Car&	getMutable(Car* car) override;
+	//void	getImmutable(const Car& car) override;
+
+	void	startup(Car* car);
 	void	update(float deltaTime);
-	void	onNotify(const Car& car) override;
 	void	draw(/*aie::Renderer2D * renderer*/);
 
+	//void	onNotify(Car& car) override;
 };
 

@@ -1,10 +1,13 @@
 #pragma once
 #include <cmath>
+#include <iostream>
 #include <Vector3.h>
 #include <Matrix3.h>
+
 #include "SceneObject.h"
-#include <iostream>
-#include "Subject.h"
+#include "GUI.h"
+//#include "Subject.h"
+//#include "MiddleMan.h"
 
 namespace aie {
 	class Texture;
@@ -57,13 +60,10 @@ enum WHEEL
 //	Y = 300,
 //	VR,
 //	ZR
-//};
+//}; 
 
 
-
-class Car
-	:	public SceneObject, 
-		public Subject
+class Car : public Subject
 {
 private:
 	//ALL UNITS IN SI unless otherwise specified
@@ -72,6 +72,9 @@ private:
 	float m_rotateSpeed;
 	float m_rotateAllowance;
 	float m_rotateAllowanceVel;
+
+	//Dirty GUI implementation
+	GUI			m_gui;
 	////TYRE_SPEED			m_tyreSpeedRating;
 	////TYRE				m_tyreConstruction;
 

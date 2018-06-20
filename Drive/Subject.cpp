@@ -10,19 +10,26 @@ class Event {};
 //Subject::~Subject()
 //{}
 
-void Subject::notify(const Car & car)
-{
-	for (int i = 0; i < m_observers.size(); i++) {
-		m_observers[i]->onNotify(car);
-	}
-}
+//void Subject::notify(const Car & car)
+//{
+//	for (int i = 0; i < m_observers.size(); i++) {
+//		m_observers[i]->onNotify(car);
+//	}
+//}
 
-void Subject::addObserver(Observer * observer)
-{
-	m_observers.push_back(observer);
-}
-
-void Subject::removeObserver(Observer * observer)
-{
-	m_observers.pop_back();
-}
+//Car & Subject::sendMutable(Car * car)
+//{
+//	// TODO: insert return statement here
+//	return this;
+//}
+//
+//void Subject::addObserver(Observer * observer)
+//{
+//	m_observers.push_back(observer);
+//}
+//
+//void Subject::removeObserver(Observer * observer)
+//{
+//	//Code to remove passed in observer
+//	m_observers.pop_back();
+//}
