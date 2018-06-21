@@ -16,8 +16,8 @@ enum GEAR
 
 class Transmission
 {
-	float efficiency;
-	GEAR currentGear;
+	float m_efficiency;
+	int m_currentGear;
 
 	struct {
 		float	reverse;
@@ -28,14 +28,38 @@ class Transmission
 		float	fourth;
 		float	fifth;
 		float	sixth;
-		float	final;
-	} ratio;
-
-
-
+		float	Final;
+	} m_ratio;
 
 public:
 	Transmission();
 	~Transmission();
+
+	Transmission(
+		float	final,
+		float	reverse,
+		float	first,
+		float	second,
+		float	third,
+		float	fourth = -1,
+		float	fifth = -1,
+		float	sixth = -1);
+
+	//void		startup(
+	//	float	final,
+	//	float	reverse,
+	//	float	first,
+	//	float	second,
+	//	float	third,
+	//	float	fourth = -1,
+	//	float	fifth = -1,
+	//	float	sixth = -1,
+	//	float	neutral = 0);
+	
+	void		shiftUp();
+	void		shiftDown();
+	void		setGear(GEAR gear);
+	GEAR		getGear();
+	
 };
 

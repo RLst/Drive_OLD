@@ -63,7 +63,7 @@ enum WHEEL
 //}; 
 
 
-class Car : public Subject
+class Car : public SceneObject
 {
 private:
 	//ALL UNITS IN SI unless otherwise specified
@@ -74,7 +74,7 @@ private:
 	float m_rotateAllowanceVel;
 
 	//Dirty GUI implementation
-	GUI			m_gui;
+	//GUI			m_gui;
 	////TYRE_SPEED			m_tyreSpeedRating;
 	////TYRE				m_tyreConstruction;
 
@@ -132,11 +132,17 @@ private:
 	//Texture
 	aie::Texture*	m_texture;
 
-
 public:
 	Car();
 	Car(const char * textureFilePath);
 	~Car();
+
+	//GUI
+	float		getRPM() const { return m_rpm; }
+	const char* getGEAR() const;
+	float		getForceWheel() const;
+	float		getVelocity() const;
+
 
 	//Heading
 	Vector3		Heading();						//Normalised vector of the direction the car is facing
@@ -203,8 +209,8 @@ public:
 	void		onUpdate(float deltaTime);
 	void		onDraw(aie::Renderer2D* renderer);
 
-	//Observer/sunject
-	Subject*	m_subject;
+	//Observer/subject
+	//Subject*	m_subject;
 	//void		notify(const Car& car) override;
 
 	//DEBUGS

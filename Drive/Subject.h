@@ -2,8 +2,6 @@
 #include "Observer.h"
 #include <vector>
 
-class Car;
-
 class Subject
 	//Publisher
 {

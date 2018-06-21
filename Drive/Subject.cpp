@@ -1,9 +1,6 @@
 #include "Subject.h"
 #include "Car.h"
 
-class Entity;
-class Event {};
-
 //Subject::Subject()
 //{}
 //

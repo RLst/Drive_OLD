@@ -2,7 +2,9 @@
 
 #include "Application.h"
 #include "Renderer2D.h"
-#include "Car.h"
+
+class Car;
+class GUI;
 
 class DriveApp : public aie::Application {
 public:
@@ -18,7 +20,8 @@ public:
 
 protected:
 
-	Car*				s13;
+	Car*				m_s13;
+	GUI*				m_gui;
+
 	aie::Renderer2D*	m_2dRenderer;
-	aie::Font*			m_font;
 };

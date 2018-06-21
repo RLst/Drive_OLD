@@ -1,23 +1,23 @@
 #pragma once
 #include "GameDefines.h"
 
-class Car;
 
 class Observer
 	//Subscriber
 {
 public:
-	virtual		~Observer() {};
+	Observer();
+	virtual		~Observer();
 
-	virtual void	update(
-		float rpm,
-		float torque,		//Engine torque
-		float velocity,
-		GEAR gear,
-		float throttle,
-		float brake,
-		float accel,
-		float wheelForce) = 0;
+	//virtual void	update(
+	//	float rpm,
+	//	float torque,		//Engine torque
+	//	float velocity,
+	//	GEAR gear,
+	//	float throttle,
+	//	float brake,
+	//	float accel,
+	//	float wheelForce) = 0;
 
 
 	//What do I want to observe from my car?

@@ -1,27 +1,25 @@
 #include "DriveApp.h"
 #include "Texture.h"
-#include "Font.h"
 #include "Input.h"
 
-DriveApp::DriveApp() {
+#include "Car.h"
+#include "GUI.h"
 
-}
+DriveApp::DriveApp() {}
 
-DriveApp::~DriveApp() {
-
-}
+DriveApp::~DriveApp() {}
 
 bool DriveApp::startup() {
 	
 	m_2dRenderer = new aie::Renderer2D();
 
-	// TODO: remember to change this when redistributing a build!
-	// the following path would be used instead: "./font/consolas.ttf"
-	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
-
 	////////////////////////////
-	s13 = new Car("../bin/textures/Silvia.png");
-	s13->setPosition(getWindowWidth() / 2.0f, getWindowHeight() / 2.0f);
+	//Car
+	m_s13 = new Car("../bin/textures/Silvia.png");
+	m_s13->setPosition(getWindowWidth() / 2.0f, getWindowHeight() / 2.0f);
+
+	//RPM
+	m_gui = new GUI();
 	///////////////////////////
 
 	return true;
@@ -29,7 +27,8 @@ bool DriveApp::startup() {
 
 void DriveApp::shutdown() {
 
-	delete m_font;
+	delete m_s13;
+	delete m_gui;
 	delete m_2dRenderer;
 }
 
@@ -39,7 +38,7 @@ void DriveApp::update(float deltaTime) {
 	aie::Input* input = aie::Input::getInstance();
 
 	///////////////////////////
-	s13->update(deltaTime);
+	m_s13->update(deltaTime);
 	/////////////////////////
 
 	// exit the application
@@ -56,12 +55,12 @@ void DriveApp::draw() {
 	m_2dRenderer->begin();
 
 	///////////////////////////////
-	// draw your stuff here!
-	s13->draw(m_2dRenderer);
+	//Car
+	m_s13->draw(m_2dRenderer);
+
+	//GUI
+	m_gui->drawCarGUI(m_s13);
 	/////////////////////////////////
-	
-	// output some text, uses the last used colour
-	m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
 
 	// done drawing sprites
 	m_2dRenderer->end();

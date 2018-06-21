@@ -5,10 +5,14 @@
 #include <Renderer2D.h>
 #include <cassert>
 
+Car::Car()
+{
+}
+
 Car::Car(const char * textureFilePath)
 {
 	//Pseudo steering
-	m_rotateSpeed = 5.0f;
+	m_rotateSpeed = 2.0f;
 	m_rotateAllowance = NULL;
 	m_rotateAllowanceVel = 5.0f;
 
@@ -60,6 +64,46 @@ Car::Car(const char * textureFilePath)
 
 Car::~Car()
 {}
+
+const char * Car::getGEAR() const
+{
+	switch (m_current_gear) {
+	case REVERSE:
+		return "R"; break;
+	case NEUTRAL:
+		return "N"; break;
+	case FIRST:
+		return "1"; break;
+	case SECOND:
+		return "2"; break;
+	case THIRD:
+		return "3"; break;
+	case FOURTH:
+		return "4"; break;
+	case FIFTH:
+		return "5"; break;
+	case SIXTH:
+		return "6"; break;
+	default:
+		assert(false);
+	}
+	return nullptr;
+}
+
+float Car::getForceWheel() const
+{
+	//auto result = (ForceWheel()).magnitude();
+	//return 0.0f;
+	//return m_vel.magnitude(ForceWheel());
+	return NULL;	//Temp
+}
+
+float Car::getVelocity() const
+{
+	//float result = ForceWheel().magnitude();
+	//return (m_vel.magnitude());
+	return NULL;	//Temp
+}
 
 Vector3 Car::Heading()
 {
@@ -177,7 +221,7 @@ void Car::offThrottle()
 
 void Car::onBrake()
 {
-	static float brakeAmount = 0.05;
+	static float brakeAmount = 0.05f;
 	m_brake += brakeAmount;
 	//Clamp
 	if (m_brake > 1.0f)
