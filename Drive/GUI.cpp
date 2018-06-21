@@ -35,13 +35,10 @@
 //	m_subject = car;
 //}
 
-void GUI::drawCarGUI(Car * car)
+void GUI::draw(Car * car)
 {
 	ImGui::Begin("Car");
-	ImGui::Text("RPM: %d", car->calcNewRPM());
-	ImGui::Text("Velocity: %f", car->getVelocity());
-	//ImGui::Text("Score: %d", m_score);
-	//ImGui::Text("HiScore: %d", m_hiscore);
-	//ImGui::Text("Deaths: %d", m_deaths);
+	ImGui::Text("RPM: %d", (int)car->calcNewRPM());
+	ImGui::Text("Velocity: %d", (int)car->getVelocity());
 	ImGui::End();
 }

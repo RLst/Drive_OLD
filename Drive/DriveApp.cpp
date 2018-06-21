@@ -59,7 +59,7 @@ void DriveApp::draw() {
 	m_s13->draw(m_2dRenderer);
 
 	//GUI
-	m_gui->drawCarGUI(m_s13);
+	m_gui->draw(m_s13);
 	/////////////////////////////////
 
 	// done drawing sprites

@@ -21,7 +21,7 @@ public:
 
 	//void	startup(Car* car);
 	//void	update(float deltaTime);
-	void	drawCarGUI(Car* car);
+	void	draw(Car* car);
 
 	//void	onNotify(Car& car) override;
 };
