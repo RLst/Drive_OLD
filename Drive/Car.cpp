@@ -377,9 +377,6 @@ void Car::onUpdate(float deltaTime)
 
 	//Calc and assign new rpm
 	m_rpm = calcNewRPM();
-
-	//DEBUG
-	printDebugs();
 }
 
 void Car::onDraw(aie::Renderer2D * renderer)
@@ -387,12 +384,3 @@ void Car::onDraw(aie::Renderer2D * renderer)
 	//Draw the car
 	renderer->drawSpriteTransformed3x3(m_texture, (float*)&m_worldTrans);
 }
-
-void Car::printDebugs()
-{
-	std::cout << "Gear: " << m_current_gear << std::endl;
-	std::cout << "RPM: " << calcNewRPM() << std::endl;
-	std::cout << "Wheel force: " << ForceWheel().magnitude() << std::endl;
-	std::cout << "Brake force: " << ForceBraking().magnitude() << std::endl;
-}
-

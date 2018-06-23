@@ -1,13 +1,10 @@
 #pragma once
-#include <cmath>
-#include <iostream>
+
 #include <Vector3.h>
 #include <Matrix3.h>
 
 #include "SceneObject.h"
 #include "GUI.h"
-//#include "Subject.h"
-//#include "MiddleMan.h"
 
 namespace aie {
 	class Texture;
@@ -72,11 +69,6 @@ private:
 	float m_rotateSpeed;
 	float m_rotateAllowance;
 	float m_rotateAllowanceVel;
-
-	//Dirty GUI implementation
-	//GUI			m_gui;
-	////TYRE_SPEED			m_tyreSpeedRating;
-	////TYRE				m_tyreConstruction;
 
 	//Transforms
 	Vector3		m_accel;
@@ -166,7 +158,6 @@ public:
 	//Longitudinal
 	Vector3		ForceLongitudinal();			//Returns sum longitudinal force on car
 
-
 	Vector3		ForceLateral();
 
 	//Engine	
@@ -208,11 +199,4 @@ public:
 	//UPDATE
 	void		onUpdate(float deltaTime);
 	void		onDraw(aie::Renderer2D* renderer);
-
-	//Observer/subject
-	//Subject*	m_subject;
-	//void		notify(const Car& car) override;
-
-	//DEBUGS
-	void		printDebugs();
 };

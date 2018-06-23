@@ -8,21 +8,7 @@ class Car;
 
 class GUI 
 {
-private:
-	//Car*	m_subject;
-
 public:
-	//GUI();
-	//GUI(Car* car);
-	//~GUI();
-
-	////Car&	getMutable(Car* car) override;
-	////void	getImmutable(const Car& car) override;
-
-	//void	startup(Car* car);
-	//void	update(float deltaTime);
 	void	draw(Car* car);
-
-	//void	onNotify(Car& car) override;
 };
 
