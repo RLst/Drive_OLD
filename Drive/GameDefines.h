@@ -12,3 +12,7 @@ const float GravityBrisbane = 9.79695f;
 const float GravityHouston = 9.79998f;
 const float GravityVietnam = 9.78055f;
 const float GravityPeru = 9.76835f;
+
+template <typename T> int sgn(T val) {
+	return (T(0) < val) - (val < T(0));
+}
