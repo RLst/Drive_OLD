@@ -240,6 +240,38 @@ void Car::offBrake()
 	if (m_brakeLoad < 0)
 		m_brakeLoad = 0;
 }
+
+void Car::leftTurn()
+{
+	m_steerDelta += m_steerGain;
+	//Clamp
+	if (m_steerDelta > m_steerLimit)
+		m_steerDelta = m_steerLimit;
+}
+
+void Car::rightTurn()
+{
+	m_steerDelta -= m_steerGain;
+	//Clamp
+	if (m_steerDelta < -m_steerLimit)
+		m_steerDelta = -m_steerLimit;
+}
+
+void Car::offTurn()
+{
+	//Reduce steering toward 0
+	if (m_steerDelta != 0) {
+		if (m_steerDelta > 0) {
+			m_steerDelta -= m_steerReduce;
+			if (m_steerDelta < 0)
+				m_steerDelta = 0;
+		}
+		else if (m_steerDelta < 0) {
+			m_steerDelta += m_steerReduce;
+			if (m_steerDelta > 0)
+				m_steerDelta = 0;
+		}
+	}
 }
 
 GEAR Car::CurrentGear()

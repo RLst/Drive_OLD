@@ -214,6 +214,11 @@ public:
 	void		offBrake();
 	//float		Brake() const { return m_brake; }
 
+	//Steering
+	void		leftTurn();						//Turn steering wheel left
+	void		rightTurn();					//Turn steering wheel right
+	void		offTurn();						//Steering wheel released, resets to 0
+
 	//Integration
 	float		calcNewRPM();					//RPM calculated back from the wheel (Do after calculating ForceWheel)
 	Vector3		calcAccel();
