@@ -97,16 +97,21 @@ private:
 	float		m_areaFront;
 	float		m_coeffDrag;
 	float		m_factorRR;					//Factor to multiply with Drag constant to get Roll Resist constant ie: 30 for rolling, 20000 for caterpillar tracks
-	float		m_corneringStiffness;
+	float		m_corneringStiffness;		//Say 2000-3000 or so?
 
 	//Engine		
 	float		m_rpm;		
-	float		m_multThrottle;				//Throttle multiplier
+	float		m_throttleLoad;				//Throttle amount/load "normalised"
 		
 	//Braking		
-	float		m_multBraking;				//Braking multiplier
-	float		m_constBraking;				//Braking constant
+	float		m_brakeLoad;				//Braking amount/load "normalised"
+	float		m_brakeConst;				//Braking constant
 
+	//Steering
+	float		m_steerDelta = 0;			//Steering amount in degrees
+	float		m_steerLimit;				//Steer limit in angles
+	float		m_steerGain;				//In degrees; How much to steer per function call
+	float		m_steerReduce;				//In degrees; How steering to reduce/reset when steering wheel let of
 
 	//Tyres and wheels
 	float		m_wheelRadius;				//metres
@@ -114,12 +119,12 @@ private:
 	float		m_tyreWidth;				//Millimetres
 	float		m_tyreAspectRatio;			//Percentage
 	float		m_tyreDiameter;				//Inches
-	float		m_heightCOM;				//Height of centre of mass
 
 	float		m_wheelBase;				//Distance between axles ( front + rear axles)
-	float		m_weightDistributionFront;		//Front weight distribution; distance between front axle to COM
-	float		m_distAxleFront;			//Distance from CG to front axle
-	float		m_distAxleRear;				//Distance from CG to rear axle
+	float		m_weightDistribFront;		//Front weight distribution; distance between front axle to COM
+	float		m_distCMFront;				//Distance from CG to front axle
+	float		m_distCMRear;				//Distance from CG to rear axle
+	float		m_heightCM;					//Height of centre of mass
 
 	float		m_wheelTrack;				//Distance between the centreline of wheels of the same axle
 
