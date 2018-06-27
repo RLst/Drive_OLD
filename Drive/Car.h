@@ -66,46 +66,49 @@ private:
 	//ALL UNITS IN SI unless otherwise specified
 
 	//FOR TESTING
-	float m_arbFactorSteering;
-	float m_rotateAllowance;
-	float m_rotateAllowanceVel;
+	//float m_arbFactorSteering;
+	//float m_rotateAllowance;
+	//float m_rotateAllowanceVel;
 
 	////Transforms
 	//Linear
 	Vector3		m_accel = Vector3();	//Zero all these values as to avoid weird offscreen bugs
 	Vector3		m_vel = Vector3();
-	//Vector3		m_velLateral;
-	//Vector3		m_velLongitudinal;
-
 	Vector3		m_pos = Vector3();
 	Vector3		m_forceTotal = Vector3();
 	Vector3		m_forceResistance = Vector3();
 	Vector3		m_forceTraction = Vector3();
+	float		m_torqueTotal = 0;
+	//Vector3		m_velLateral;
+	//Vector3		m_velLongitudinal;
 
-	//Angular
-	float		m_orientationZ = 0;		//It's a float because right now it's only in 2D
-	Vector3		m_forceLatFront = Vector3();
-	Vector3		m_forceLatRear = Vector3();
-	float		m_angSteering = 0;		//rho
+	//Angular (these are floats because only one axis of rotation in 2D (Z)
+	float		m_angAccel = 0;			
 	float		m_angVel = 0;			//omega
+	float		m_angPos = 0;
+	//Vector3		m_forceLatFront = Vector3();
+	//Vector3		m_forceLatRear = Vector3();
 
-	////Dimensions
-
+	//Dimensions
+	float		m_width;
+	float		m_length;
 
 	////Physics
 	float		m_mass;
+	float		m_inertia;					//Say 1000?
 	float		m_areaFront;
 	float		m_coeffDrag;
 	float		m_factorRR;					//Factor to multiply with Drag constant to get Roll Resist constant ie: 30 for rolling, 20000 for caterpillar tracks
 	float		m_corneringStiffness;		//Say 2000-3000 or so?
 
 	//Engine		
-	float		m_rpm;		
-	float		m_throttleLoad;				//Throttle amount/load "normalised"
+	float		m_throttleLoad = 0;			//Throttle amount/load "normalised"
+	float		m_rpm;
+	float		m_redline;					
 		
 	//Braking		
-	float		m_brakeLoad;				//Braking amount/load "normalised"
-	float		m_brakeConst;				//Braking constant
+	float		m_brakeLoad = 0;			//Braking amount/load "normalised"
+	float		m_brakeConst;				//Braking constant (kinda general)
 
 	//Steering
 	float		m_steerDelta = 0;			//Steering amount in degrees
@@ -127,6 +130,7 @@ private:
 	float		m_heightCM;					//Height of centre of mass
 
 	float		m_wheelTrack;				//Distance between the centreline of wheels of the same axle
+	float		m_angVelWheel = 0;				//Wheel rotation rate
 
 	////////////////
 	//TEMP: Gears
@@ -196,6 +200,7 @@ public:
 	float		Weight();						//Total weight of the car
 	float		WeightOnFrontAxle();
 	float		WeightOnRearAxle();
+	float		Inertia();
 
 	//Transmission
 	GEAR		CurrentGear();					//Returns currently selected gear

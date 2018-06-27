@@ -402,50 +402,114 @@ void Car::onUpdate(float deltaTime)
 	////PHYSICS ENGINE
 	//1. Get global longitudinal and lateral velocities
 	//Local velocity
-	float velLong = m_vel.y * cosf(m_orientationZ);
-	float velLat = m_vel.x * sinf(m_orientationZ);
-
+	float velLong = m_vel.y * cosf(m_angPos);
+	float velLat = m_vel.x * sinf(m_angPos);
 
 	//World velocity... I think it needs to be the local velocity
 	//float velLong = m_vel.y;	
 	//float velLat = m_vel.x;
-
 	//float velLongitudinal = m_worldTrans.yAxis.magnitude();
 	//float velLateral = m_worldTrans.xAxis.magnitude();
 
 	//2. Calculate slip angles for front and rear wheels/axles
-	//auto angVel = 
-	//auto slipAngFront
-	auto slipAngFront = atanf((velLat + m_angVel * m_distAxleFront) / velLong) - m_angSteering * (float) sgn(velLong);
-	auto slipAngRear = atanf((velLat - m_angVel * m_distAxleRear) / velLong);
+	static float slipAngFront = 0;
+	static float slipAngRear = 0;
+	if (velLong > 0) {
+		float slipAngFront = atanf((velLat + m_angVel * m_distCMFront) / velLong) - m_steerDelta * (float)sgn(velLong);
+		float slipAngRear = atanf((velLat - m_angVel * m_distCMRear) / velLong);
+	}
 
 	//3. Calculate lateral force for all wheels/axles (SIMPLE)
-	m_forceLatFront = m_corneringStiffness * slipAngFront;
-	m_forceLatRear = m_corneringStiffness * slipAngRear;
+	float forceLatFront = cosf(m_steerDelta) * m_corneringStiffness * slipAngFront;
+	float forceLatRear = m_corneringStiffness * slipAngRear;	//No steering needed
+	float forceLatTotal = forceLatFront + forceLatRear;			//Cornering Force
 
 	//4. Clamp lateral force for all wheels (SIMPLE)
-	static float forceLatMax = m_mu * Weight();
-	if (m_forceLatFront.magnitude() >= forceLatMax)
-		m_forceLatFront.magnitude();
+	float forceLatMaxSimple = m_mu * Weight() / 2.0f;
+	if (forceLatFront >= forceLatMaxSimple) {
+		forceLatFront = forceLatMaxSimple;
+	}
+	if (forceLatRear >= forceLatMaxSimple) {
+		forceLatRear = forceLatMaxSimple;
+	}
 	
 
 
-	//OLD////////////
-	//Find acceleration
-	m_accel = calcAccel();
+	//7. Automatically shift gears if automatic
 
-	////Find velocity
-	m_vel = calcVel(deltaTime);
+	//8. Calculate engine torque from lookup curve
+	float torqueEngine = EngineTorque(m_rpm);
 
-	//TEMP; Stop car from sliding 
-	m_vel = Heading() * m_vel.magnitude();
+	//9. Apply throttle load to engine torque
+	float torqueEngineThrottled = m_throttleLoad * torqueEngine;
+
+	//10. Calculate traction torque
+	float torqueTraction = torqueEngineThrottled * GearRatio(m_current_gear) * GearRatio(FINAL) * m_transmissionEff;
+
+	//11. Calculate traction force
+	float forceTraction = torqueTraction / WheelRadius();
+
+	//12. Calculate braking force
+	float forceBraking = -m_brakeConst * m_brakeLoad;
+
+	//13. Calculate rolling resistance force
+	Vector3 forceRR;
+	forceRR.y = -cRR() * velLong;
+	forceRR.x = -cRR() * velLat;
+
+	//14. Calculate drag force
+	Vector3 forceDrag;
+	forceDrag.y = -cDrag() * velLong * velLong;
+	forceDrag.x = -cDrag() * velLat * velLat;
+
+	//15. Calculate total forces on car body
+	m_forceTotal.y = forceTraction + forceLatFront * sinf(m_steerDelta) * (forceRR.y + forceDrag.y);
+	m_forceTotal.x = 0 + forceLatRear + forceLatFront * sin(m_steerDelta) * (forceRR.x + forceDrag.x);
+
+	//16. Calculate total torque on car body
+	m_torqueTotal = cos(m_steerDelta) * forceLatFront * m_distCMFront - forceLatRear * m_distCMRear;
+
+	//17. Calculate accelerations
+	m_accel = m_forceTotal / m_mass;
+	m_angAccel = m_torqueTotal /*/ Inertia()*/;		//Can optimize here
+
+	//18. Transform acceleration from local to world transform
+
+	//19. Integrate acceleration to get the velocity (in world reference frame)
+	m_vel += m_accel * deltaTime;
+	m_angVel += m_angAccel * deltaTime;
+
+	//20. Integrate velocities to get the position in world coords?
+	m_pos += m_vel * deltaTime;
+	m_angPos += m_angVel * deltaTime;
+
+	//21. Calculate wheel rotational/angular velocity (WHY??? To calc rpm of the next frame perhaps?)
+	m_angVelWheel = m_vel.magnitude() / WheelRadius();
+
+
+	//5. Calculate engine rpm
+	m_rpm = velLong * GearRatio(m_current_gear) * GearRatio(FINAL) * (60 / 2 * PI * WheelRadius());
+
+	//6. Limit engine rpms under redline (and above idle?)
+	if (m_rpm > m_redline)
+		m_rpm = m_redline;
+
+	////OLD////////////
+	////Find acceleration
+	//m_accel = calcAccel();
+
+	//////Find velocity
+	//m_vel = calcVel(deltaTime);
+
+	////TEMP; Stop car from sliding 
+	//m_vel = Heading() * m_vel.magnitude();
+
+	////Calc and assign new rpm
+	//m_rpm = calcNewRPM();
 
 	//Apply final transformations
 	translate(m_vel);
-	//rotate(m_orientationZ);
-
-	//Calc and assign new rpm
-	m_rpm = calcNewRPM();
+	rotate(m_angPos);
 }
 
 void Car::onDraw(aie::Renderer2D * renderer)
