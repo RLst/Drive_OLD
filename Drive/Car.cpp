@@ -5,6 +5,7 @@
 #include <Renderer2D.h>
 #include <cassert>
 #include <cmath>
+#include <imgui.h>
 
 Car::Car()
 {
@@ -29,7 +30,7 @@ Car::Car(const char * textureFilePath) :
 	m_redline(6000),
 
 	//Braking
-	m_brakeConst(10000.0f),
+	m_brakeConst(100.0f),
 
 	//Steering
 	m_steerLimit(30.0f),
@@ -165,7 +166,7 @@ Vector3 Car::ForceLongitudinal()
 float Car::EngineTorque(float rpm)
 {
 	//TEMP!!
-	return 500.0f * m_throttleLoad;			//Return some arbitrary torque (Nm) * throttle multiplier
+	return 50.0f /** m_throttleLoad*/;			//Return some arbitrary torque (Nm) * throttle multiplier
 
 	//Need: RPM, Throttle amount 0-1.0f
 	//float rpm = calcRPM();
@@ -343,7 +344,8 @@ Vector3 Car::calcAccel()
 
 Vector3 Car::calcVel(float deltaTime)
 {
-	return m_vel + calcAccel() * deltaTime;
+	//return m_vel + calcAccel() * deltaTime;
+	return m_vel + m_accel * deltaTime;
 }
 
 Vector3 Car::calcPos(float deltaTime)
@@ -412,19 +414,19 @@ void Car::onUpdate(float deltaTime)
 	////PHYSICS ENGINE
 	//1. Get global longitudinal and lateral velocities
 	//Local velocity
-	float velLong = m_vel.y * cosf(m_angPos);
-	float velLat = m_vel.x * sinf(m_angPos);
+	//float velLong = m_vel.y * cosf(m_angPos);
+	//float velLat = m_vel.x * sinf(m_angPos);
 
 	//World velocity... I think it needs to be the local velocity
-	//float velLong = m_vel.y;	
-	//float velLat = m_vel.x;
+	float velLong = m_vel.y;	
+	float velLat = m_vel.x;
 	//float velLongitudinal = m_worldTrans.yAxis.magnitude();
 	//float velLateral = m_worldTrans.xAxis.magnitude();
 
 	//2. Calculate slip angles for front and rear wheels/axles
 	static float slipAngFront = 0;
 	static float slipAngRear = 0;
-	if (velLong > 0) {
+	if (m_vel.magnitude() > 0) {
 		float slipAngFront = atanf((velLat + m_angVel * m_distCMFront) / velLong) - m_steerDelta * (float)sgn(velLong);
 		float slipAngRear = atanf((velLat - m_angVel * m_distCMRear) / velLong);
 	}
@@ -432,7 +434,6 @@ void Car::onUpdate(float deltaTime)
 	//3. Calculate lateral force for all wheels/axles (SIMPLE)
 	float forceLatFront = cosf(m_steerDelta) * m_corneringStiffness * slipAngFront;
 	float forceLatRear = m_corneringStiffness * slipAngRear;	//No steering needed
-	float forceLatTotal = forceLatFront + forceLatRear;			//Cornering Force
 
 	//4. Clamp lateral force for all wheels (SIMPLE)
 	float forceLatMaxSimple = m_mu * Weight() / 2.0f;
@@ -442,8 +443,18 @@ void Car::onUpdate(float deltaTime)
 	if (forceLatRear >= forceLatMaxSimple) {
 		forceLatRear = forceLatMaxSimple;
 	}
-	
 
+	//Find total cornering force
+	float forceLatTotal = forceLatFront + forceLatRear;			//Cornering Force
+
+	//5. Calculate engine rpm
+	m_rpm = velLong * GearRatio(m_current_gear) * GearRatio(FINAL) * (60 / 2 * PI * WheelRadius());
+
+	//6. Limit engine rpms under redline (and above idle?)
+	if (m_rpm > m_redline)
+		m_rpm = m_redline;
+	else if (m_rpm < 800)
+		m_rpm = 800;
 
 	//7. Automatically shift gears if automatic
 
@@ -473,7 +484,7 @@ void Car::onUpdate(float deltaTime)
 	forceDrag.x = -cDrag() * velLat * velLat;
 
 	//15. Calculate total forces on car body
-	m_forceTotal.y = forceTraction + forceLatFront * sinf(m_steerDelta) * (forceRR.y + forceDrag.y);
+	m_forceTotal.y = forceTraction + forceBraking + forceLatFront * sinf(m_steerDelta) * (forceRR.y + forceDrag.y);
 	m_forceTotal.x = 0 + forceLatRear + forceLatFront * sin(m_steerDelta) * (forceRR.x + forceDrag.x);
 
 	//16. Calculate total torque on car body
@@ -497,12 +508,7 @@ void Car::onUpdate(float deltaTime)
 	m_angVelWheel = m_vel.magnitude() / WheelRadius();
 
 
-	//5. Calculate engine rpm
-	m_rpm = velLong * GearRatio(m_current_gear) * GearRatio(FINAL) * (60 / 2 * PI * WheelRadius());
 
-	//6. Limit engine rpms under redline (and above idle?)
-	if (m_rpm > m_redline)
-		m_rpm = m_redline;
 
 	////OLD////////////
 	////Find acceleration
@@ -519,7 +525,82 @@ void Car::onUpdate(float deltaTime)
 
 	//Apply final transformations
 	translate(m_vel);
-	rotate(m_angPos);
+	rotate(m_angVel);
+
+	//DEBUG GUI
+	ImGui::Begin("Drive");
+	
+	//General
+	ImGui::Text("Gear: %s", getGEARstr());
+	ImGui::Text("RPM: %f", m_rpm);
+
+	if (ImGui::CollapsingHeader("Linear", "Linear", true, true))
+	{
+		ImGui::Columns(3);
+		//Header column
+		ImGui::NewLine();
+		ImGui::Text("Force");
+		ImGui::Text("Accel");
+		ImGui::Text("Velocity");
+		ImGui::Text("Position");
+
+		ImGui::NextColumn();
+		ImGui::Text("X");
+		ImGui::Text("%f", m_forceTotal.x);
+		ImGui::Text("%f", m_accel.x);
+		ImGui::Text("%f", m_vel.x);
+		ImGui::Text("%f", m_pos.x);
+
+		ImGui::NextColumn();
+		ImGui::Text("Y");
+		ImGui::Text("%f", m_forceTotal.y);
+		ImGui::Text("%f", m_accel.y);
+		ImGui::Text("%f", m_vel.y);
+		ImGui::Text("%f", m_pos.y);
+		ImGui::Columns(1);
+	}
+
+	if (ImGui::CollapsingHeader("Angular", "Angular", true, true))
+	{
+		ImGui::Text("Steering Angle: %f", m_steerDelta);
+		ImGui::Columns(2);
+		ImGui::Separator();
+		ImGui::Text("Accel");
+		ImGui::Text("Velocity");
+		ImGui::Text("Position");
+		ImGui::NextColumn();
+		ImGui::Text("%f", m_angAccel);
+		ImGui::Text("%f", m_angVel);
+		ImGui::Text("%f", m_angPos);
+		ImGui::Columns(1);
+	}
+
+	ImGui::End();
+
+	//ImGui::Begin("Car");
+	//ImGui::Text("Gear: %s", car->getGEARstr());
+	//ImGui::Text("RPM: %d", (int)car->getRPM());
+	//ImGui::NewLine();
+	//ImGui::Text("Accel: %f, %f", car->getAccel().x, car->getAccel().y);
+	//ImGui::Text("Vel: %f, %f", car->getVel().x, car->getVel().y);				//World velocity vector
+	//ImGui::Text("Pos: %f, %f", car->getPos().x, car->getPos().y);
+	//ImGui::NewLine();
+	////ImGui::Text("Accel: %f, %f", car->getAccel().x, car->getAccel().y);
+	////ImGui::Text("Vel: %f, %f", car->getVel().x, car->getVel().y);				//World velocity vector
+	//ImGui::Text("Pos: %f, %f", car->getWorldTrans().yAxis.x, car->getWorldTrans().yAxis.y);
+
+	//ImGui::NewLine();
+	//ImGui::Text("Steering angle: %d", (int)car->getSteeringAngle());	//Steering angle (delta)
+	//ImGui::Text("Ang Accel: %d", (int)car->getAngAccel());
+	//ImGui::Text("Ang Vel: %d", (int)car->getAngVel());
+	//ImGui::Text("Ang Pos: %d", (int)car->getAngPos());
+
+	////Side slip angle (beta)
+	////Rotation angle (yaw rate)
+	////Slip angle front wheel
+	////Slip angle rear wheels
+	////Local velocity vector
+
 }
 
 void Car::onDraw(aie::Renderer2D * renderer)

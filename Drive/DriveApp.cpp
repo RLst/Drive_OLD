@@ -19,7 +19,7 @@ bool DriveApp::startup() {
 	m_s13->setPosition(getWindowWidth() / 2.0f, getWindowHeight() / 2.0f);
 
 	//RPM
-	m_gui = new GUI();
+	//m_gui = new GUI();
 	///////////////////////////
 
 	return true;
@@ -28,7 +28,7 @@ bool DriveApp::startup() {
 void DriveApp::shutdown() {
 
 	delete m_s13;
-	delete m_gui;
+	//delete m_gui;
 	delete m_2dRenderer;
 }
 
@@ -59,7 +59,7 @@ void DriveApp::draw() {
 	m_s13->draw(m_2dRenderer);
 
 	//GUI
-	m_gui->draw(m_s13);
+	//m_gui->draw(m_s13);
 	/////////////////////////////////
 
 	// done drawing sprites

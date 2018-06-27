@@ -39,25 +39,6 @@ enum WHEEL
 	RL = 2,
 	RR = 3
 };
-//enum TYRE_SPEED {
-//	J = 100,
-//	K = 110,
-//	L = 120,
-//	M = 130,
-//	N = 140,
-//	P = 150,
-//	Q = 160,
-//	R = 170,
-//	S = 180,
-//	T = 190,
-//	U = 200,
-//	H = 210,
-//	V = 240,
-//	W = 270,
-//	Y = 300,
-//	VR,
-//	ZR
-//}; 
 
 
 class Car : public SceneObject
@@ -157,13 +138,19 @@ public:
 	Car(const char * textureFilePath);
 	~Car();
 
-	//GUI
+	//GUI - getters are bad practice
 	float		getRPM() const { return m_rpm; }
 	const char* getGEARstr() const;				//Get gear as a string for GUI
 	float		getForceWheel() const;
 	float		getVelocity() const;
 	float		getSteeringAngle() const { return m_steerDelta; }
 
+	Vector3		getAccel() const { return m_accel; }
+	Vector3		getVel() const { return m_vel; }
+	Vector3		getPos() const { return m_pos; }
+	float		getAngAccel() const { return m_angAccel; }
+	float		getAngVel() const { return m_angVel; }
+	float		getAngPos() const { return m_angPos; }
 
 	//Heading
 	Vector3		Heading();						//Normalised vector of the direction the car is facing
@@ -186,8 +173,6 @@ public:
 
 	//Longitudinal
 	Vector3		ForceLongitudinal();			//Returns sum longitudinal force on car
-
-	Vector3		ForceLateral();
 
 	//Engine	
 	float		EngineTorque(float rpm);		//Lookup actual engine torque from curve or table

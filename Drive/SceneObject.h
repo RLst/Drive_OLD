@@ -38,6 +38,8 @@ public:
 	void			updateTransform();
 
 	//Get transforms
+	Matrix3			getWorldTrans() const { return m_worldTrans; }
+	Matrix3			getLocalTrans() const { return m_localTrans; }
 	
 	//Manipulate local transform
 	void			setPosition(float x, float y);

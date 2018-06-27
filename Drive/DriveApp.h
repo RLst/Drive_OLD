@@ -21,7 +21,7 @@ public:
 protected:
 
 	Car*				m_s13;
-	GUI*				m_gui;
+	//GUI*				m_gui;
 
 	aie::Renderer2D*	m_2dRenderer;
 };

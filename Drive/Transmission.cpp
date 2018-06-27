@@ -50,6 +50,17 @@ void Transmission::shiftUp()
 	//Convert back
 }
 
+void Transmission::shiftDown()
+{
+	//Convert to an int
+	int currentGear = m_currentGear;
+
+	//Shift gear up
+	m_currentGear = (GEAR)currentGear - 1;
+
+	//Convert back
+}
+
 void Transmission::setGear(GEAR gear)
 {
 	//Convert 
