@@ -7,6 +7,13 @@ void GUI::draw(Car * car)
 	ImGui::Begin("Car");
 	ImGui::Text("RPM: %d", (int)car->calcNewRPM());
 	ImGui::Text("Velocity: %d", (int)car->getVelocity());
+	//Steering angle (delta)
+	//Side slip angle (beta)
+	//Rotation angle (yaw rate)
+	//Slip angle front wheel
+	//Slip angle rear wheels
+	//Local velocity vector
+	//World velocity vector
 	ImGui::End();
 
 	//std::cout << "Gear: " << m_current_gear << std::endl;
