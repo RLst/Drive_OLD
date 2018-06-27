@@ -4,41 +4,50 @@
 #include <Texture.h>
 #include <Renderer2D.h>
 #include <cassert>
+#include <cmath>
 
 Car::Car()
 {
 }
 
-Car::Car(const char * textureFilePath)
-{
+Car::Car(const char * textureFilePath) :
 	//Pseudo steering
-	m_rotateSpeed = 2.0f;
-	m_rotateAllowance = NULL;
-	m_rotateAllowanceVel = 5.0f;
-
-	//Transformations
-	m_pos = Vector3();
-	m_vel = Vector3();
-	m_accel = Vector3();
-	m_zRotation = NULL;
+	m_arbFactorSteering(2.0f),
+	m_rotateAllowance(NULL),
+	m_rotateAllowanceVel(5.0f),
 
 	//Constants/coefficients
-	m_coeffDrag = 0.3f;		//For a Corvette
-	m_factorRR = 30.0f;		//For the average car driving on tarmac
+	m_coeffDrag(0.3f),			//For a Corvette
+	m_factorRR(30.0f),			//For the average car driving on tarmac
 
 	//Physics
-	m_mass = 1250.00f;
-	m_areaFront = 2.2f;
+	m_mass(1250.00f),
+	m_areaFront(2.2f),
 
 	//Engine
-	m_rpm = 1000.0;
-	m_throttle = NULL;
+	m_rpm(800.0),
+	m_multThrottle(0.0f),
 
 	//Braking
-	m_cBraking = 10000.0f;
-	m_brake = NULL;
+	m_constBraking(10000.0f),
+	m_multBraking(0.0f),
+
+	//Dimensions
+	m_wheelRadius(0.34f),
+	m_mu(1.0f),
+	m_wheelBase(1.5f),
+	m_weightDistributionFront(0.7f),
+	m_distAxleFront(m_weightDistributionFront),					//Calculate axle weights from weight distribution
+	m_distAxleRear(m_wheelBase - m_weightDistributionFront),
 
 	//Transmission
+	m_current_gear(FIRST),
+	m_transmissionEff(0.8f)
+{
+	//Texture
+	m_texture = new aie::Texture(textureFilePath);
+
+	//Gear ratio setup
 	m_gearRatio.reverse = -2.90f;
 	m_gearRatio.neutral = 0.0f;
 	m_gearRatio.first = 2.66f;
@@ -48,24 +57,13 @@ Car::Car(const char * textureFilePath)
 	m_gearRatio.fifth = 0.74f;
 	m_gearRatio.sixth = 0.5f;
 	m_gearRatio.final = 3.42f;
-	m_current_gear = FIRST;
-	m_transmissionEff = 0.8f;
 
-	//Dimensions
-	m_wheelRadius = 0.34f;
-	m_mu = 1.0f;
-
-	//Weight
-	m_wheelBase = 1.5f;
-
-	//Texture
-	m_texture = new aie::Texture(textureFilePath);
 }
 
 Car::~Car()
 {}
 
-const char * Car::getGEAR() const
+const char * Car::getGEARstr() const
 {
 	switch (m_current_gear) {
 	case REVERSE:
@@ -85,7 +83,7 @@ const char * Car::getGEAR() const
 	case SIXTH:
 		return "6"; break;
 	default:
-		assert(false);
+		assert(false);			//Failsafe
 	}
 	return nullptr;
 }
@@ -133,7 +131,7 @@ Vector3 Car::ForceBraking()
 {
 	//Brakes only work if the car is moving...
 	if (m_vel.magnitude() > 0) {
-		return -Heading() * m_cBraking * m_brake;
+		return -Heading() * m_constBraking * m_multBraking;
 	}
 	return Vector3();  //...otherwise return a null vector
 }
@@ -160,7 +158,7 @@ Vector3 Car::ForceLongitudinal()
 float Car::EngineTorque(float rpm)
 {
 	//TEMP!!
-	return 500.0f * m_throttle;			//Return some arbitrary torque (Nm) * throttle multiplier
+	return 500.0f * m_multThrottle;			//Return some arbitrary torque (Nm) * throttle multiplier
 
 	//Need: RPM, Throttle amount 0-1.0f
 	//float rpm = calcRPM();
@@ -193,48 +191,48 @@ float Car::Weight()
 
 float Car::WeightOnFrontAxle()
 {
-	return ((m_distRAxle / m_wheelBase) * Weight()) - ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());		//Not sure about the last part
+	return ((m_distAxleRear / m_wheelBase) * Weight()) - ((m_heightCOM / m_wheelBase) * m_mass * m_accel.magnitude());		//Not sure about the last part
 }
 
 float Car::WeightOnRearAxle()
 {
-	return ((m_distFAxle / m_wheelBase) * Weight()) + ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());
+	return ((m_distAxleFront / m_wheelBase) * Weight()) + ((m_heightCOM / m_wheelBase) * m_mass * m_accel.magnitude());
 }
 
 void Car::onThrottle()
 {
 	static float onThrottleAmount = 0.05f;
-	m_throttle += onThrottleAmount;
+	m_multThrottle += onThrottleAmount;
 	//Clamp
-	if (m_throttle > 1.0f)
-		m_throttle = 1.0f;
+	if (m_multThrottle > 1.0f)
+		m_multThrottle = 1.0f;
 }
 
 void Car::offThrottle()
 {
 	static float offThrottleAmmount = 0.25f;
-	m_throttle -= offThrottleAmmount;
+	m_multThrottle -= offThrottleAmmount;
 	//Clamp
-	if (m_throttle < 0)
-		m_throttle = 0;
+	if (m_multThrottle < 0)
+		m_multThrottle = 0;
 }
 
 void Car::onBrake()
 {
 	static float brakeAmount = 0.05f;
-	m_brake += brakeAmount;
+	m_multBraking += brakeAmount;
 	//Clamp
-	if (m_brake > 1.0f)
-		m_brake = 1.0f;
+	if (m_multBraking > 1.0f)
+		m_multBraking = 1.0f;
 }
 
 void Car::offBrake()
 {
 	static float offBrakeAmount = 0.25f;
-	m_brake -= offBrakeAmount;
+	m_multBraking -= offBrakeAmount;
 	//Clamp
-	if (m_brake < 0)
-		m_brake = 0;
+	if (m_multBraking < 0)
+		m_multBraking = 0;
 }
 
 GEAR Car::CurrentGear()
@@ -310,48 +308,47 @@ Vector3 Car::calcPos(float deltaTime)
 
 void Car::onUpdate(float deltaTime)
 {
+	////CONTROLS
 	//Get input instance
 	auto input = aie::Input::getInstance();
 
-	////CONTROLS
-	//Accelerate
+	//ACCELERATION
 	if (input->isKeyDown(aie::INPUT_KEY_I) ||
-		input->isKeyDown(aie::INPUT_KEY_UP)) {
+		input->isKeyDown(aie::INPUT_KEY_UP))
 		onThrottle();
-	}
 	else
 		offThrottle();
 	
 	//Brake
 	if (input->isKeyDown(aie::INPUT_KEY_K) ||
-		input->isKeyDown(aie::INPUT_KEY_DOWN)) {
+		input->isKeyDown(aie::INPUT_KEY_DOWN))
 		onBrake();
-	}
 	else
 		offBrake();
 
-	//Steer left
+	//STEERING
 	if (input->isKeyDown(aie::INPUT_KEY_J)||
 		input->isKeyDown(aie::INPUT_KEY_LEFT)) {
+		//Left
+		m_angSteering += m_arbFactorSteering * deltaTime;
 
-		//Simple steering limit in relation to car speed
-		m_rotateAllowance = m_vel.magnitude()/m_rotateAllowanceVel;
-		if (m_rotateAllowance > 1)	m_rotateAllowance = 1.0f;
-		
-		m_zRotation = m_rotateSpeed * m_rotateAllowance * deltaTime;
+		////Simple steering limit in relation to car speed
+		//m_rotateAllowance = m_vel.magnitude()/m_rotateAllowanceVel;
+		//if (m_rotateAllowance > 1)	m_rotateAllowance = 1.0f;
+		//m_orientationZ = m_rotateSpeed * m_rotateAllowance * deltaTime;
 	}
-	//Steer right
 	else if (input->isKeyDown(aie::INPUT_KEY_L) ||
 			input->isKeyDown(aie::INPUT_KEY_RIGHT)) {	
-		
-		//Simple steering limit in relation to car speed
-		m_rotateAllowance = m_vel.magnitude() / m_rotateAllowanceVel;
-		if (m_rotateAllowance > 1)	m_rotateAllowance = 1.0f;
+		//Right
+		m_angSteering -= m_arbFactorSteering * deltaTime;
 
-		m_zRotation = -m_rotateSpeed * m_rotateAllowance * deltaTime;
+		////Simple steering limit in relation to car speed
+		//m_rotateAllowance = m_vel.magnitude() / m_rotateAllowanceVel;
+		//if (m_rotateAllowance > 1)	m_rotateAllowance = 1.0f;
+		//m_orientationZ = -m_rotateSpeed * m_rotateAllowance * deltaTime;
 	}
 	else {
-		m_zRotation = 0;
+		m_orientationZ = 0;
 	}
 
 	//Gear shifting
@@ -373,7 +370,7 @@ void Car::onUpdate(float deltaTime)
 
 	//Apply final transformations
 	translate(m_vel);
-	rotate(m_zRotation);
+	//rotate(m_orientationZ);
 
 	//Calc and assign new rpm
 	m_rpm = calcNewRPM();

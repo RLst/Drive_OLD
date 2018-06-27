@@ -66,35 +66,65 @@ private:
 	//ALL UNITS IN SI unless otherwise specified
 
 	//FOR TESTING
-	float m_rotateSpeed;
+	float m_arbFactorSteering;
 	float m_rotateAllowance;
 	float m_rotateAllowanceVel;
 
-	//Transforms
-	Vector3		m_accel;
-	Vector3		m_vel;
-	Vector3		m_pos;
-	float		m_zRotation;
+	////Transforms
+	//Linear
+	Vector3		m_accel = Vector3();	//Zero all these values as to avoid weird offscreen bugs
+	Vector3		m_vel = Vector3();
+	//Vector3		m_velLateral;
+	//Vector3		m_velLongitudinal;
 
-	//Resistance
-	float		m_coeffDrag;
-	float		m_factorRR;						//Factor to multiply with Drag constant to get Roll Resist constant
-												//ie: 30 for rolling, 20000 for caterpillar tracks
+	Vector3		m_pos = Vector3();
+	Vector3		m_forceTotal = Vector3();
+	Vector3		m_forceResistance = Vector3();
+	Vector3		m_forceTraction = Vector3();
 
-	//Physical
+	//Angular
+	float		m_orientationZ = 0;		//It's a float because right now it's only in 2D
+	Vector3		m_forceLatFront = Vector3();
+	Vector3		m_forceLatRear = Vector3();
+	float		m_angSteering = 0;		//rho
+	float		m_angVel = 0;			//omega
+
+	////Dimensions
+
+
+	////Physics
 	float		m_mass;
 	float		m_areaFront;
+	float		m_coeffDrag;
+	float		m_factorRR;					//Factor to multiply with Drag constant to get Roll Resist constant ie: 30 for rolling, 20000 for caterpillar tracks
+	float		m_corneringStiffness;
 
-	//Engine
-	//float		m_arbEngineForce;
-	float		m_rpm;
-	float		m_throttle;						//Throttle multiplier
+	//Engine		
+	float		m_rpm;		
+	float		m_multThrottle;				//Throttle multiplier
+		
+	//Braking		
+	float		m_multBraking;				//Braking multiplier
+	float		m_constBraking;				//Braking constant
 
-	//Braking
-	float		m_cBraking;
-	float		m_brake;						//Brake multiplier
 
-	//Gears
+	//Tyres and wheels
+	float		m_wheelRadius;				//metres
+	float		m_mu;						//Tire friction coefficient
+	float		m_tyreWidth;				//Millimetres
+	float		m_tyreAspectRatio;			//Percentage
+	float		m_tyreDiameter;				//Inches
+	float		m_heightCOM;				//Height of centre of mass
+
+	float		m_wheelBase;				//Distance between axles ( front + rear axles)
+	float		m_weightDistributionFront;		//Front weight distribution; distance between front axle to COM
+	float		m_distAxleFront;			//Distance from CG to front axle
+	float		m_distAxleRear;				//Distance from CG to rear axle
+
+	float		m_wheelTrack;				//Distance between the centreline of wheels of the same axle
+
+	////////////////
+	//TEMP: Gears
 	struct {
 		float	reverse;
 		float	neutral;
@@ -108,20 +138,9 @@ private:
 	} m_gearRatio;
 	GEAR m_current_gear;
 	float m_transmissionEff;
+	/////////////////////
 
-	//Tyres and wheels
-	float		m_wheelRadius;
-	float		m_mu;							//Tire friction coefficient
-	float		m_tyreWidth;					//Millimetres
-	float		m_tyreAspectRatio;				//Percentage
-	float		m_tyreDiameter;					//Inches
-	float		m_wheelBase;					//Distance between axles
-	float		m_wheelTrack;					//Distance between the centreline of wheels of the same axle
-	float		m_heightCM;						//Height of centre of mass
-	float		m_distFAxle;					//Distance from CG to front axle
-	float		m_distRAxle;					//Distance from CG to rear axle
-
-	//Texture
+	//Sprites
 	aie::Texture*	m_texture;
 
 public:
@@ -131,7 +150,7 @@ public:
 
 	//GUI
 	float		getRPM() const { return m_rpm; }
-	const char* getGEAR() const;
+	const char* getGEARstr() const;				//Get gear as a string for GUI
 	float		getForceWheel() const;
 	float		getVelocity() const;
 
