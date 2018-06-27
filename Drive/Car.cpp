@@ -26,19 +26,24 @@ Car::Car(const char * textureFilePath) :
 
 	//Engine
 	m_rpm(800.0),
-	m_multThrottle(0.0f),
+	m_throttleLoad(0.0f),
 
 	//Braking
-	m_constBraking(10000.0f),
-	m_multBraking(0.0f),
+	m_brakeConst(10000.0f),
+	m_brakeLoad(0.0f),
+
+	//Steering
+	m_steerLimit(30.0f),
+	m_steerGain(2.0f),
+	m_steerReduce(1.0f),
 
 	//Dimensions
 	m_wheelRadius(0.34f),
 	m_mu(1.0f),
 	m_wheelBase(1.5f),
-	m_weightDistributionFront(0.7f),
-	m_distAxleFront(m_weightDistributionFront),					//Calculate axle weights from weight distribution
-	m_distAxleRear(m_wheelBase - m_weightDistributionFront),
+	m_weightDistribFront(0.7f),
+	m_distCMFront(m_weightDistribFront),					//Calculate axle weights from weight distribution
+	m_distCMRear(m_wheelBase - m_weightDistribFront),
 
 	//Transmission
 	m_current_gear(FIRST),
@@ -65,7 +70,8 @@ Car::~Car()
 
 const char * Car::getGEARstr() const
 {
-	switch (m_current_gear) {
+	switch (m_current_gear) 
+	{
 	case REVERSE:
 		return "R"; break;
 	case NEUTRAL:
@@ -83,7 +89,7 @@ const char * Car::getGEARstr() const
 	case SIXTH:
 		return "6"; break;
 	default:
-		assert(false);			//Failsafe
+		assert(false);			//Failsafe; this should never run
 	}
 	return nullptr;
 }
@@ -131,7 +137,7 @@ Vector3 Car::ForceBraking()
 {
 	//Brakes only work if the car is moving...
 	if (m_vel.magnitude() > 0) {
-		return -Heading() * m_constBraking * m_multBraking;
+		return -Heading() * m_brakeConst * m_brakeLoad;
 	}
 	return Vector3();  //...otherwise return a null vector
 }
@@ -158,7 +164,7 @@ Vector3 Car::ForceLongitudinal()
 float Car::EngineTorque(float rpm)
 {
 	//TEMP!!
-	return 500.0f * m_multThrottle;			//Return some arbitrary torque (Nm) * throttle multiplier
+	return 500.0f * m_throttleLoad;			//Return some arbitrary torque (Nm) * throttle multiplier
 
 	//Need: RPM, Throttle amount 0-1.0f
 	//float rpm = calcRPM();
@@ -191,48 +197,49 @@ float Car::Weight()
 
 float Car::WeightOnFrontAxle()
 {
-	return ((m_distAxleRear / m_wheelBase) * Weight()) - ((m_heightCOM / m_wheelBase) * m_mass * m_accel.magnitude());		//Not sure about the last part
+	return ((m_distCMRear / m_wheelBase) * Weight()) - ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());		//Not sure about the last part
 }
 
 float Car::WeightOnRearAxle()
 {
-	return ((m_distAxleFront / m_wheelBase) * Weight()) + ((m_heightCOM / m_wheelBase) * m_mass * m_accel.magnitude());
+	return ((m_distCMFront / m_wheelBase) * Weight()) + ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());
 }
 
 void Car::onThrottle()
 {
 	static float onThrottleAmount = 0.05f;
-	m_multThrottle += onThrottleAmount;
+	m_throttleLoad += onThrottleAmount;
 	//Clamp
-	if (m_multThrottle > 1.0f)
-		m_multThrottle = 1.0f;
+	if (m_throttleLoad > 1.0f)
+		m_throttleLoad = 1.0f;
 }
 
 void Car::offThrottle()
 {
 	static float offThrottleAmmount = 0.25f;
-	m_multThrottle -= offThrottleAmmount;
+	m_throttleLoad -= offThrottleAmmount;
 	//Clamp
-	if (m_multThrottle < 0)
-		m_multThrottle = 0;
+	if (m_throttleLoad < 0)
+		m_throttleLoad = 0;
 }
 
 void Car::onBrake()
 {
 	static float brakeAmount = 0.05f;
-	m_multBraking += brakeAmount;
+	m_brakeLoad += brakeAmount;
 	//Clamp
-	if (m_multBraking > 1.0f)
-		m_multBraking = 1.0f;
+	if (m_brakeLoad > 1.0f)
+		m_brakeLoad = 1.0f;
 }
 
 void Car::offBrake()
 {
 	static float offBrakeAmount = 0.25f;
-	m_multBraking -= offBrakeAmount;
+	m_brakeLoad -= offBrakeAmount;
 	//Clamp
-	if (m_multBraking < 0)
-		m_multBraking = 0;
+	if (m_brakeLoad < 0)
+		m_brakeLoad = 0;
+}
 }
 
 GEAR Car::CurrentGear()
