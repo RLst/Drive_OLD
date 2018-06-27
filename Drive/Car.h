@@ -162,6 +162,7 @@ public:
 	const char* getGEARstr() const;				//Get gear as a string for GUI
 	float		getForceWheel() const;
 	float		getVelocity() const;
+	float		getSteeringAngle() const { return m_steerDelta; }
 
 
 	//Heading

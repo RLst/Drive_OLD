@@ -12,25 +12,24 @@ Car::Car()
 
 Car::Car(const char * textureFilePath) :
 	//Pseudo steering
-	m_arbFactorSteering(2.0f),
-	m_rotateAllowance(NULL),
-	m_rotateAllowanceVel(5.0f),
+	//m_arbFactorSteering(2.0f),
+	//m_rotateAllowance(NULL),
+	//m_rotateAllowanceVel(5.0f),
 
-	//Constants/coefficients
+	////Physics
+	m_mass(1250.00f),
+	m_inertia(0),
+	m_areaFront(2.2f),
 	m_coeffDrag(0.3f),			//For a Corvette
 	m_factorRR(30.0f),			//For the average car driving on tarmac
-
-	//Physics
-	m_mass(1250.00f),
-	m_areaFront(2.2f),
+	m_corneringStiffness(2000),	//In Newtons??
 
 	//Engine
 	m_rpm(800.0),
-	m_throttleLoad(0.0f),
+	m_redline(6000),
 
 	//Braking
 	m_brakeConst(10000.0f),
-	m_brakeLoad(0.0f),
 
 	//Steering
 	m_steerLimit(30.0f),
@@ -39,14 +38,16 @@ Car::Car(const char * textureFilePath) :
 
 	//Dimensions
 	m_wheelRadius(0.34f),
-	m_mu(1.0f),
+	m_mu(0.9f),
 	m_wheelBase(1.5f),
 	m_weightDistribFront(0.7f),
 	m_distCMFront(m_weightDistribFront),					//Calculate axle weights from weight distribution
 	m_distCMRear(m_wheelBase - m_weightDistribFront),
+	m_heightCM(0.5f),
+	m_wheelTrack(1.0f),
 
 	//Transmission
-	m_current_gear(FIRST),
+	m_current_gear(NEUTRAL),
 	m_transmissionEff(0.8f)
 {
 	//Texture
@@ -203,6 +204,12 @@ float Car::WeightOnFrontAxle()
 float Car::WeightOnRearAxle()
 {
 	return ((m_distCMFront / m_wheelBase) * Weight()) + ((m_heightCM / m_wheelBase) * m_mass * m_accel.magnitude());
+}
+
+float Car::Inertia()
+{
+	//Inertia formula of a rectangle (Iyy)
+	return m_mass * (m_length * (m_width * m_width * m_width)) / 12.0f;
 }
 
 void Car::onThrottle()
@@ -369,8 +376,9 @@ void Car::onUpdate(float deltaTime)
 	if (input->isKeyDown(aie::INPUT_KEY_J)||
 		input->isKeyDown(aie::INPUT_KEY_LEFT)) {
 		//Left
-		m_angSteering += m_arbFactorSteering * deltaTime;
+		leftTurn();
 
+		//m_angSteering += m_arbFactorSteering * deltaTime;
 		////Simple steering limit in relation to car speed
 		//m_rotateAllowance = m_vel.magnitude()/m_rotateAllowanceVel;
 		//if (m_rotateAllowance > 1)	m_rotateAllowance = 1.0f;
@@ -379,15 +387,17 @@ void Car::onUpdate(float deltaTime)
 	else if (input->isKeyDown(aie::INPUT_KEY_L) ||
 			input->isKeyDown(aie::INPUT_KEY_RIGHT)) {	
 		//Right
-		m_angSteering -= m_arbFactorSteering * deltaTime;
-
+		rightTurn();
+		
+		//m_angSteering -= m_arbFactorSteering * deltaTime;
 		////Simple steering limit in relation to car speed
 		//m_rotateAllowance = m_vel.magnitude() / m_rotateAllowanceVel;
 		//if (m_rotateAllowance > 1)	m_rotateAllowance = 1.0f;
 		//m_orientationZ = -m_rotateSpeed * m_rotateAllowance * deltaTime;
 	}
 	else {
-		m_orientationZ = 0;
+		offTurn();
+		//m_angPos = 0;
 	}
 
 	//Gear shifting
