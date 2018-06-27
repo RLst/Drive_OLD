@@ -359,7 +359,40 @@ void Car::onUpdate(float deltaTime)
 		ShiftDown();
 	}
 
-	////Find acceleration
+
+	////PHYSICS ENGINE
+	//1. Get global longitudinal and lateral velocities
+	//Local velocity
+	float velLong = m_vel.y * cosf(m_orientationZ);
+	float velLat = m_vel.x * sinf(m_orientationZ);
+
+
+	//World velocity... I think it needs to be the local velocity
+	//float velLong = m_vel.y;	
+	//float velLat = m_vel.x;
+
+	//float velLongitudinal = m_worldTrans.yAxis.magnitude();
+	//float velLateral = m_worldTrans.xAxis.magnitude();
+
+	//2. Calculate slip angles for front and rear wheels/axles
+	//auto angVel = 
+	//auto slipAngFront
+	auto slipAngFront = atanf((velLat + m_angVel * m_distAxleFront) / velLong) - m_angSteering * (float) sgn(velLong);
+	auto slipAngRear = atanf((velLat - m_angVel * m_distAxleRear) / velLong);
+
+	//3. Calculate lateral force for all wheels/axles (SIMPLE)
+	m_forceLatFront = m_corneringStiffness * slipAngFront;
+	m_forceLatRear = m_corneringStiffness * slipAngRear;
+
+	//4. Clamp lateral force for all wheels (SIMPLE)
+	static float forceLatMax = m_mu * Weight();
+	if (m_forceLatFront.magnitude() >= forceLatMax)
+		m_forceLatFront.magnitude();
+	
+
+
+	//OLD////////////
+	//Find acceleration
 	m_accel = calcAccel();
 
 	////Find velocity
