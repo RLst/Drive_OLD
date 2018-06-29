@@ -30,7 +30,7 @@ Car::Car(const char * textureFilePath) :
 	m_redline(6000),
 
 	//Braking
-	m_brakeConst(100.0f),
+	m_brakeConst(1000.0f),
 
 	//Steering
 	m_steerLimit(30.0f),
@@ -113,7 +113,7 @@ float Car::getVelocity() const
 
 Vector3 Car::Heading()
 {
-	return m_worldTrans.yAxis.normalised();		//Should already be normalised anyways
+	return m_worldTrans.yAxis.normaliseCpy();		//Should already be normalised anyways
 }
 
 float Car::cDrag()
@@ -413,13 +413,16 @@ void Car::onUpdate(float deltaTime)
 
 	////PHYSICS ENGINE
 	//1. Get global longitudinal and lateral velocities
+	Vector3 velLocal = m_worldTrans.inverseCpy() * m_vel;
+	float velLong = velLocal.y;
+	float velLat = velLocal.x;
+	
 	//Local velocity
 	//float velLong = m_vel.y * cosf(m_angPos);
 	//float velLat = m_vel.x * sinf(m_angPos);
-
 	//World velocity... I think it needs to be the local velocity
-	float velLong = m_vel.y;	
-	float velLat = m_vel.x;
+	//float velLong = m_vel.y;	
+	//float velLat = m_vel.x;
 	//float velLongitudinal = m_worldTrans.yAxis.magnitude();
 	//float velLateral = m_worldTrans.xAxis.magnitude();
 
@@ -524,7 +527,7 @@ void Car::onUpdate(float deltaTime)
 	//m_rpm = calcNewRPM();
 
 	//Apply final transformations
-	translate(m_vel);
+	translate(m_vel * deltaTime);
 	rotate(m_angVel);
 
 	//DEBUG GUI
@@ -549,14 +552,14 @@ void Car::onUpdate(float deltaTime)
 		ImGui::Text("%f", m_forceTotal.x);
 		ImGui::Text("%f", m_accel.x);
 		ImGui::Text("%f", m_vel.x);
-		ImGui::Text("%f", m_pos.x);
+		ImGui::Text("%f", m_localTrans[2].x);
 
 		ImGui::NextColumn();
 		ImGui::Text("Y");
 		ImGui::Text("%f", m_forceTotal.y);
 		ImGui::Text("%f", m_accel.y);
 		ImGui::Text("%f", m_vel.y);
-		ImGui::Text("%f", m_pos.y);
+		ImGui::Text("%f", m_localTrans[2].y);
 		ImGui::Columns(1);
 	}
 

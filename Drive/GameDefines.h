@@ -16,3 +16,8 @@ const float GravityPeru = 9.76835f;
 template <typename T> int sgn(T val) {
 	return (T(0) < val) - (val < T(0));
 }
+
+int craprandom(int min, int max);
+//{
+//	return min + (rand() % (max - min + 1));
+//}

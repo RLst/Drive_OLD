@@ -5,6 +5,11 @@
 #include "Car.h"
 #include "GUI.h"
 
+//Test matrix inv
+#include <Matrix3.h>
+#include "GameDefines.h"
+#include <iostream>
+
 DriveApp::DriveApp() {}
 
 DriveApp::~DriveApp() {}
@@ -12,7 +17,7 @@ DriveApp::~DriveApp() {}
 bool DriveApp::startup() {
 	
 	m_2dRenderer = new aie::Renderer2D();
-
+	//m_2dRenderer->setCameraPos(getWindowWidth() * -0.5f, getWindowHeight() * -0.5f)
 	////////////////////////////
 	//Car
 	m_s13 = new Car("../bin/textures/Silvia.png");
@@ -20,6 +25,55 @@ bool DriveApp::startup() {
 
 	//RPM
 	//m_gui = new GUI();
+
+	/////////////////////////////////
+	//test out matrix inverse
+	//Matrix3 invMe;
+
+	////Add in some raandom values
+	//for (int i = 0; i < 3; ++i) {
+	//	for (int j = 0; i < 3; ++j) {
+	//		invMe.data[i][j] = (float)craprandom(0,500);
+	//	}
+	//}
+
+	////Draw matrix before inverse
+	//for (int i = 0; i < 3; ++i) {
+	//	for (int j = 0; j < 3; ++j) {
+	//		std::cout << invMe.data[i][j] << " , ";
+	//	}
+	//	std::cout << std::endl;
+	//}
+	//std::cout << std::endl;
+
+	////Inverse
+	//invMe.inverse();
+
+	////Draw matrix after inverse
+	//for (int i = 0; i < 3; ++i) {
+	//	for (int j = 0; j < 3; ++j) {
+	//		std::cout << invMe.data[i][j] << " , ";
+	//	}
+	//	std::cout << std::endl;
+	//}
+	//std::cout << std::endl;
+
+	////Re-inverse
+	//invMe.inverse();
+
+	////Draw matrix after reverse
+	//for (int i = 0; i < 3; ++i) {
+	//	for (int j = 0; j < 3; ++j) {
+	//		std::cout << invMe.data[i][j] << " , ";
+	//	}
+	//	std::cout << std::endl;
+	//}
+	//std::cout << std::endl;
+
+	////Pause
+	//std::cin.get();
+	//////////////////////////////
+
 	///////////////////////////
 
 	return true;
